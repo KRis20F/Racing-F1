@@ -200,7 +200,7 @@ export default function Navbar({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      <div className="flex-1 p-4 mt-24">{children}</div>
+      <div className="flex-1 mt-24">{children}</div>
     </div>
   );
 }

@@ -4,15 +4,14 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
-import Login from "../app/features/auth/Login";
+// import ProtectedRoute from "./ProtectedRoute";
 import Home from "../app/features/home/Home";
 import Game from "../app/features/game/Game";
 import Exchange from "../app/features/exchange/components/Exchange";
 import Navbar from "../app/UI/Navbar";
+import RaceTrack from "../app/features/game/components/RaceTrack";
 
 const Routes = () => {
-  // Definir el layout principal que incluye el Navbar
   const Layout = () => (
     <Navbar>
       <Outlet />
@@ -29,20 +28,30 @@ const Routes = () => {
           element: <Home />,
         },
         {
-          path: "login",
-          element: <Login />,
-        },
-        {
           path: "exchange",
           element: <Exchange />,
         },
         {
           path: "game",
-          element: (
-            <ProtectedRoute>
-              <Game />
-            </ProtectedRoute>
-          ),
+          element: <Outlet />,
+          children: [
+            {
+              index: true,
+              element: <Game />
+            },
+            {
+              path: "race",
+              element: <RaceTrack isBetting={false} trackId={0} />
+            },
+            {
+              path: "betting",
+              element: <RaceTrack isBetting={true} betAmount={100} />
+            },
+            {
+              path: "leaderboard",
+              element: <div>Leaderboard - Coming Soon</div>
+            }
+          ]
         },
         {
           path: "*",

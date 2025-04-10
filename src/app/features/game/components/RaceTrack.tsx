@@ -1,5 +1,5 @@
-import { useWallet } from '@solana/wallet-adapter-react';
-import React, { useEffect, useState } from 'react';
+import { useWallet } from "@solana/wallet-adapter-react";
+import React, { useState } from "react";
 
 // TODO: Implementar diseño de pista de carreras
 // - Añadir fondo con perspectiva
@@ -8,63 +8,56 @@ import React, { useEffect, useState } from 'react';
 // - Incluir HUD con información de carrera
 
 interface RaceTrackProps {
-  trackId: number;
   isBetting: boolean;
   betAmount?: number;
 }
 
-const RaceTrack: React.FC<RaceTrackProps> = ({ trackId, isBetting, betAmount }) => {
+const RaceTrack: React.FC<RaceTrackProps> = ({ isBetting, betAmount }) => {
   const { publicKey } = useWallet();
-  const [raceStatus, setRaceStatus] = useState<'waiting' | 'racing' | 'finished'>('waiting');
-  const [time, setTime] = useState<number>(0);
-  const [position, setPosition] = useState<number>(0);
-
-  // TODO: Implementar lógica de carrera
-  useEffect(() => {
-    if (raceStatus === 'racing') {
-      const timer = setInterval(() => {
-        setTime(prev => prev + 1);
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [raceStatus]);
-
-  const startRace = async () => {
-    if (!publicKey) return;
-
-    try {
-      // TODO: Implementar lógica de inicio de carrera
-      setRaceStatus('racing');
-    } catch (error) {
-      console.error('Error starting race:', error);
-    }
-  };
+  const [raceStatus, setRaceStatus] = useState<
+    "waiting" | "racing" | "finished"
+  >("waiting");
 
   return (
-    <div className="race-track">
-      {/* TODO: Añadir elementos visuales de la pista */}
-      <div className="track-container">
-        <div className="player-car">
-          {/* TODO: Implementar sprite del coche */}
+    <div className="flex flex-col gap-4 p-4">
+      {/* Contenedor principal para Unity (placeholder por ahora) */}
+      <div className="w-full h-[500px] bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+        <p className="text-white text-xl">Unity Game Loading...</p>
+      </div>
+
+      {/* HUD de la carrera */}
+      <div className="bg-gray-800 p-4 rounded-lg text-white">
+        <div className="flex justify-between items-center">
+          {/* Estado de la carrera */}
+          <div className="text-lg font-bold">
+            Status: {raceStatus.toUpperCase()}
+          </div>
+
+          {/* Información de apuesta */}
+          {isBetting && (
+            <div className="bg-yellow-600 px-4 py-2 rounded">
+              Bet Amount: {betAmount} COINS
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="race-hud">
-        <div className="race-info">
-          <span>Time: {time}s</span>
-          <span>Position: {position}</span>
-        </div>
-
-        {isBetting && (
-          <div className="bet-info">
-            <span>Bet Amount: {betAmount} COINS</span>
-          </div>
-        )}
-
-        {raceStatus === 'waiting' && (
-          <button onClick={startRace}>
+      {/* Controles */}
+      <div className="flex justify-center gap-4">
+        {raceStatus === "waiting" && (
+          <button
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded"
+            onClick={() => setRaceStatus("racing")}
+          >
             Start Race
+          </button>
+        )}
+        {raceStatus === "finished" && (
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded"
+            onClick={() => setRaceStatus("waiting")}
+          >
+            Race Again
           </button>
         )}
       </div>
@@ -72,4 +65,4 @@ const RaceTrack: React.FC<RaceTrackProps> = ({ trackId, isBetting, betAmount }) 
   );
 };
 
-export default RaceTrack; 
+export default RaceTrack;
