@@ -7,16 +7,21 @@ import {
 // import ProtectedRoute from "./ProtectedRoute";
 import Home from "../app/features/home/Home";
 import Game from "../app/features/game/Game";
-import Exchange from "../app/features/exchange/components/Exchange";
+import Exchange from "../app/features/exchange/Exchange";
+import Profile from "../app/features/profile/Profile";
 import Navbar from "../app/UI/Navbar";
 import RaceTrack from "../app/features/game/components/RaceTrack";
+import { ThemeProvider, useTheme } from "../app/context/ThemeContext";
 
 const Routes = () => {
-  const Layout = () => (
-    <Navbar>
-      <Outlet />
-    </Navbar>
-  );
+  const Layout = () => {
+    const { isDarkMode, toggleDarkMode } = useTheme();
+    return (
+      <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
+        <Outlet />
+      </Navbar>
+    );
+  };
 
   const router = createBrowserRouter([
     {
@@ -32,26 +37,30 @@ const Routes = () => {
           element: <Exchange />,
         },
         {
+          path: "profile",
+          element: <Profile />,
+        },
+        {
           path: "game",
           element: <Outlet />,
           children: [
             {
               index: true,
-              element: <Game />
+              element: <Game />,
             },
             {
               path: "race",
-              element: <RaceTrack isBetting={false} trackId={0} />
+              element: <RaceTrack isBetting={false} />,
             },
             {
               path: "betting",
-              element: <RaceTrack isBetting={true} betAmount={100} />
+              element: <RaceTrack isBetting={true} betAmount={100} />,
             },
             {
               path: "leaderboard",
-              element: <div>Leaderboard - Coming Soon</div>
-            }
-          ]
+              element: <div>Leaderboard - Coming Soon</div>,
+            },
+          ],
         },
         {
           path: "*",
@@ -61,7 +70,11 @@ const Routes = () => {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  );
 };
 
 export default Routes;

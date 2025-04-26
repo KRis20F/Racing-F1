@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Estilos base para asegurar colores de texto y fondo adecuados */
+@layer base {
+  html {
+    @apply bg-white text-black;
+  }
+
+  html.dark {
+    @apply bg-gray-900 text-white;
+  }
+
+  body {
+    @apply min-h-screen bg-gradient-to-br from-gray-50 to-gray-100;
+  }
+
+  html.dark body {
+    @apply bg-gradient-to-br from-[#2D1B69] via-[#4B2A9D] to-[#7834BE];
+  }
+
+  .text-white.dark\:text-white {
+    @apply text-black;
+  }
+}

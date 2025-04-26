@@ -1,17 +1,16 @@
-import { BrowserRouter } from "react-router-dom";
-import Routes from "../routes";
+import { BrowserRouter as Router } from "react-router-dom";
+import Routes from "../routes/index";
 import Navbar from "./UI/Navbar";
 
-function App() {
+export function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Navbar>
+    <div className="min-h-screen">
+      <Router>
+        <Navbar />
+        <main className="container mx-auto px-4">
           <Routes />
-        </Navbar>
-      </div>
-    </BrowserRouter>
+        </main>
+      </Router>
+    </div>
   );
 }
-
-export default App;

@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import { Buffer } from "buffer";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,20 +11,19 @@ export default defineConfig({
       process: "process/browser",
       stream: "stream-browserify",
       util: "util",
+      buffer: "buffer/",
     },
   },
   define: {
-    global: {},
+    global: "globalThis",
     "process.env": {},
+    Buffer: Buffer,
   },
   optimizeDeps: {
     esbuildOptions: {
-      define: {
-        global: "globalThis",
-      },
       plugins: [
         NodeGlobalsPolyfillPlugin({
-          buffer: true,
+          process: true,
         }),
       ],
     },
