@@ -4,14 +4,15 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
-// import ProtectedRoute from "./ProtectedRoute";
 import Home from "../app/features/home/Home";
 import Game from "../app/features/game/Game";
 import Exchange from "../app/features/exchange/Exchange";
-import Profile from "../app/features/profile/Profile";
+import Profile from "../app/features/userDashboard/Profile";
 import Navbar from "../app/UI/Navbar";
 import RaceTrack from "../app/features/game/components/RaceTrack";
 import { ThemeProvider, useTheme } from "../app/context/ThemeContext";
+import AuthContainer from "../app/auth/AuthForm";
+import Dashboard from "../app/features/userDashboard/Dashboard";
 
 const Routes = () => {
   const Layout = () => {
@@ -24,6 +25,12 @@ const Routes = () => {
   };
 
   const router = createBrowserRouter([
+    // Rutas públicas fuera del layout principal
+    {
+      path: "/auth",
+      element: <AuthContainer />,
+    },
+    // Rutas protegidas o con layout principal
     {
       path: "/",
       element: <Layout />,
@@ -39,6 +46,10 @@ const Routes = () => {
         {
           path: "profile",
           element: <Profile />,
+        },
+        {
+          path: "dashboard",
+          element: <Dashboard />,
         },
         {
           path: "game",

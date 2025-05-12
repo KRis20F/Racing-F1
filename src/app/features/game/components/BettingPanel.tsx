@@ -1,6 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import React, { useEffect, useState } from 'react';
-import { SolanaService } from '../../config/solana';
+import { SolanaService } from '../../../../config/solana';
 
 // TODO: Implementar diseño de panel de apuestas
 // - Añadir lista de jugadores disponibles

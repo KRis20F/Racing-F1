@@ -56,11 +56,11 @@ export default function Navbar({ children }: NavbarProps) {
     },
     {
       name: "Login",
-      path: "/login",
+      path: "/auth?mode=login",
     },
     {
       name: "Register",
-      path: "/register",
+      path: "/auth?mode=register",
     },
   ];
 
