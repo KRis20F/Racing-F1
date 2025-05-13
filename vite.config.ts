@@ -6,6 +6,16 @@ import { Buffer } from "buffer";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: './', // Para GitHub Pages
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
   resolve: {
     alias: {
       process: "process/browser",
