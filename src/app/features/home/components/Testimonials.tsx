@@ -61,7 +61,7 @@ export function Testimonials() {
   }, []);
 
   return (
-    <section className="py-24 overflow-hidden bg-[#2D1B69]/20">
+    <section className="py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 mb-16 text-center">
         <h2 className="text-6xl font-display mb-4 bg-gradient-to-b from-white to-[#666] bg-clip-text text-transparent">
           Amado por pilotos de clase mundial

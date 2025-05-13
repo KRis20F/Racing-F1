@@ -13,6 +13,7 @@ import RaceTrack from "../app/features/game/components/RaceTrack";
 import { ThemeProvider, useTheme } from "../app/context/ThemeContext";
 import AuthContainer from "../app/auth/AuthForm";
 import Dashboard from "../app/features/userDashboard/Dashboard";
+import Shop from "../app/features/shop/Shop";
 
 const Routes = () => {
   const Layout = () => {
@@ -38,6 +39,10 @@ const Routes = () => {
         {
           index: true,
           element: <Home />,
+        },
+        {
+          path: "shop",
+          element: <Shop />,
         },
         {
           path: "exchange",

@@ -1,4 +1,4 @@
-import icon from "../../../../assets/guci.svg";
+import icon from "../../../../assets/svg/guci.svg";
 
 export function FeatureCoin() {
   return (

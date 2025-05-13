@@ -1,0 +1,150 @@
+@keyframes smoke {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(100px, -5px) scale(1.4);
+    opacity: 0.12;
+  }
+  75% {
+    opacity: 0.08;
+  }
+  100% {
+    transform: translate(200px, -10px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes smoke-left {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.12;
+  }
+  50% {
+    transform: translate(-80px, -5px) scale(1.3);
+    opacity: 0.1;
+  }
+  75% {
+    opacity: 0.06;
+  }
+  100% {
+    transform: translate(-160px, -10px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes smoke-up {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.1;
+  }
+  50% {
+    transform: translate(40px, -80px) scale(1.4);
+    opacity: 0.08;
+  }
+  75% {
+    opacity: 0.05;
+  }
+  100% {
+    transform: translate(80px, -160px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+.smoke-particle {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(220,220,220,0.15) 0%, rgba(220,220,220,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  filter: blur(8px);
+}
+
+.smoke-container {
+  position: absolute;
+  width: 600px;
+  height: 300px;
+  z-index: 20;
+  overflow: visible;
+}
+
+/* Contenedor principal - rueda trasera */
+.main-smoke {
+  right: 32%;
+  bottom: 12%;
+}
+
+/* Contenedor secundario - extensión rueda trasera */
+.secondary-smoke {
+  right: 25%;
+  bottom: 10%;
+}
+
+/* Humo disperso izquierda */
+.left-smoke {
+  right: 40%;
+  bottom: 15%;
+}
+
+/* Humo disperso derecha */
+.right-smoke {
+  right: 20%;
+  bottom: 8%;
+}
+
+/* Humo de fondo */
+.background-smoke {
+  right: 28%;
+  bottom: 5%;
+}
+
+/* Animaciones para cada grupo de partículas */
+.smoke-1, .smoke-2, .smoke-3, .smoke-4 { 
+  animation: smoke 5s infinite;
+}
+
+.smoke-5, .smoke-6, .smoke-7 { 
+  animation: smoke 5s infinite 1.5s;
+}
+
+.smoke-8, .smoke-9, .smoke-10 { 
+  animation: smoke-left 6s infinite 1s;
+}
+
+.smoke-11, .smoke-12, .smoke-13 { 
+  animation: smoke 6s infinite 2s;
+}
+
+.smoke-14, .smoke-15, .smoke-16 { 
+  animation: smoke-up 7s infinite 0.5s;
+}
+
+/* Ajustes individuales de opacidad y tamaño */
+.smoke-1 { animation-delay: 0s; }
+.smoke-2 { animation-delay: 1s; }
+.smoke-3 { animation-delay: 2s; }
+.smoke-4 { animation-delay: 3s; }
+.smoke-5 { animation-delay: 0.5s; opacity: 0.08; }
+.smoke-6 { animation-delay: 1.5s; opacity: 0.07; }
+.smoke-7 { animation-delay: 2.5s; opacity: 0.06; }
+.smoke-8 { animation-delay: 0.8s; opacity: 0.09; }
+.smoke-9 { animation-delay: 1.8s; opacity: 0.08; }
+.smoke-10 { animation-delay: 2.8s; opacity: 0.07; }
+.smoke-11 { animation-delay: 1.2s; opacity: 0.08; }
+.smoke-12 { animation-delay: 2.2s; opacity: 0.07; }
+.smoke-13 { animation-delay: 3.2s; opacity: 0.06; }
+.smoke-14 { animation-delay: 0.3s; opacity: 0.05; }
+.smoke-15 { animation-delay: 1.3s; opacity: 0.04; }
+.smoke-16 { animation-delay: 2.3s; opacity: 0.03; } 

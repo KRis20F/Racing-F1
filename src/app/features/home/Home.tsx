@@ -1,37 +1,68 @@
-import Logo from "../../../assets/guci.svg";
 import InfoCars from "./components/InfoCars";
 import { FeatureCoin } from "./components/FeatureCoin";
 import { Stats } from "./components/Stats";
 import { Testimonials } from "./components/Testimonials";
+import { useNavigate } from 'react-router-dom';
+import backgroundImage from '../../../assets/imgs/background-hero.png';
+import ModelPreloader from './components/ModelPreloader';
+import SmokeEffect from './components/SmokeEffect';
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col">
+      {/* Preload 3D Models */}
+      <ModelPreloader />
+      
       {/* Hero Section */}
-      <section className="w-full min-h-screen relative">
-        <div
-          className="absolute inset-0 w-full h-full z-0"
-          style={{
-            backgroundImage: `url('/src/assets/fast-cars.gif')`,
-            backgroundSize: "contain",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
+      <section className="relative w-full h-screen -top-24">
+        {/* Background Image Container */}
+        <div className="absolute inset-0">
+          <div 
+            className="w-full h-full"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundPosition: 'center 65%',
+              backgroundSize: '100% auto',
+              backgroundRepeat: 'no-repeat'
+            }}
+          />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+          
+          {/* Smoke Effect */}
+          <SmokeEffect />
+        </div>
 
-        <div className="absolute inset-0 m-auto max-w-[1169px] rounded-lg bg-black/50 z-10" />
-
-        <div className="relative z-20 flex flex-col items-center justify-center h-screen p-8">
-          <div className="max-w-4xl w-full text-center">
-            <h1 className="text-5xl font-bold text-white mb-12">
-              Welcome to Race Game
-            </h1>
-            <div className="w-64 h-64 mx-auto">
-              <img src={Logo} alt="Logo" className="w-full h-full" />
+        {/* Content Container */}
+        <div className="relative h-full">
+          {/* Hero Content */}
+          <div className="h-full max-w-7xl mx-auto px-16 flex flex-col justify-center">
+            <div className="max-w-2xl space-y-8">
+              <h1 className="text-8xl font-bold text-white leading-tight">
+                Pista Virtual
+              </h1>
+              <p className="text-2xl text-gray-200 max-w-xl">
+                Únete a la revolución del gaming y las criptomonedas. 
+                Compite en carreras épicas, gana NFTs exclusivos y 
+                convierte tu pasión por los autos en recompensas reales.
+              </p>
+              <div className="flex gap-6 pt-4">
+                <button 
+                  onClick={() => navigate('/shop')}
+                  className="bg-white text-black px-10 py-4 rounded-full text-xl font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+                >
+                  Mercado NFT
+                </button>
+                <button 
+                  onClick={() => navigate('/game')}
+                  className="bg-transparent border-2 border-white text-white px-10 py-4 rounded-full text-xl font-semibold hover:bg-white hover:text-black transition-all duration-300"
+                >
+                  Jugar Ahora
+                </button>
+              </div>
             </div>
-            <p className="text-5xl font-bold text-white mb-12">
-              Es hora de ganar dinero
-            </p>
           </div>
         </div>
       </section>

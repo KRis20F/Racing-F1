@@ -19,7 +19,7 @@ export interface AuthResponse {
 }
 
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>('/auth/login', credentials);
+  const response = await api.post<AuthResponse>('/api/auth/login', credentials);
   localStorage.setItem('token', response.data.token);
   return response.data;
 };

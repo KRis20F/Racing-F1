@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./assets/index.css";
+import "./assets/css/index.css";
 import Routes from "./routes";
 import { Buffer } from "buffer";
 globalThis.Buffer = Buffer;

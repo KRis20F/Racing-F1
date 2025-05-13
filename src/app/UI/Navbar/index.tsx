@@ -1,7 +1,7 @@
 import { ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import Logo from "../../../assets/guci.svg";
+import Logo from "../../../assets/svg/guci.svg";
 interface NavbarProps {
   children?: ReactNode;
 }
