@@ -1,11 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './', // Para GitHub Pages
+  base: '/Racing-F1/', // Para GitHub Pages
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

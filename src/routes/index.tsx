@@ -2,7 +2,7 @@ import {
   Navigate,
   Outlet,
   RouterProvider,
-  createBrowserRouter,
+  createHashRouter,
 } from "react-router-dom";
 import Home from "../app/features/home/Home";
 import Game from "../app/features/game/Game";
@@ -25,7 +25,7 @@ const Routes = () => {
     );
   };
 
-  const router = createBrowserRouter([
+  const router = createHashRouter([
     // Rutas públicas fuera del layout principal
     {
       path: "/auth",
