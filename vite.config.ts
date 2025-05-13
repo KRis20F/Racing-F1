@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
-import { Buffer } from "buffer";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,32 +9,25 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        manualChunks: undefined
-      }
-    }
   },
   resolve: {
     alias: {
       process: "process/browser",
       stream: "stream-browserify",
-      util: "util",
-      buffer: "buffer/",
+      util: "util"
     },
   },
   define: {
-    global: "globalThis",
-    "process.env": {},
-    Buffer: Buffer,
+    'process.env': {},
+    global: 'globalThis',
+    Buffer: ['buffer', 'Buffer']
   },
   optimizeDeps: {
     esbuildOptions: {
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          process: true,
-        }),
-      ],
-    },
-  },
+      define: {
+        global: 'globalThis',
+        Buffer: 'Buffer'
+      }
+    }
+  }
 });
