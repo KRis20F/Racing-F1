@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./assets/css/index.css";
-import Routes from "./routes";
+import { App } from "./app/App";
 import { Buffer } from "buffer";
 globalThis.Buffer = Buffer;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Routes />
+    <App />
   </StrictMode>
 );
