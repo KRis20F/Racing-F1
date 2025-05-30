@@ -1,0 +1,221 @@
+.profileContainer {
+  padding: 2rem;
+  color: white;
+  background-color: #0b1437;
+  min-height: 100vh;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.pageHeader h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.gridLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.card {
+  background: linear-gradient(125deg, #4c35de 0%, #4c35de 40%, #2d1f8f 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  position: relative;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("/card-pattern.png") no-repeat center;
+  background-size: cover;
+  opacity: 0.1;
+}
+
+.cardLogo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.cardLogoCircles {
+  display: flex;
+  gap: -0.5rem;
+}
+
+.cardLogoCircle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.cardLogoCircle:last-child {
+  margin-left: -0.8rem;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.cardNumber {
+  font-size: 1.5rem;
+  letter-spacing: 4px;
+  margin: 1rem 0;
+  font-family: monospace;
+  position: relative;
+}
+
+.cardDetails {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.75rem;
+  position: relative;
+}
+
+.cardDetailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cardDetailLabel {
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+
+.balanceCard {
+  background: rgba(11, 20, 55, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.balanceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balanceHeader h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.menuDots {
+  display: flex;
+  gap: 2px;
+}
+
+.menuDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.balanceAmount {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.balanceGraph {
+  width: 100%;
+  height: 40px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.graphLine {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #4c35de, #2d1f8f);
+}
+
+.transactionList {
+  background: rgba(11, 20, 55, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.transactionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.transactionHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.viewAllButton {
+  background: #4c35de;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.transactionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.transactionId {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+.transactionAmount {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.pdfButton {
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.pdfButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
