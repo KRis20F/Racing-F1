@@ -1,0 +1,119 @@
+import { useWallet } from '@solana/wallet-adapter-react';
+import React, { useEffect, useState } from 'react';
+// import { SolanaService } from '../../../api/config/solana';
+
+// TODO: Implementar diseño de panel de apuestas
+// - Añadir lista de jugadores disponibles
+// - Mostrar historial de apuestas
+// - Implementar sistema de notificaciones
+// - Añadir animaciones de transacciones
+
+interface Player {
+  id: number;
+  username: string;
+  rating: number;
+}
+
+interface BettingPanelProps {
+  onBetSubmit: (betData: { playerId: number; amount: number }) => Promise<void>;
+  isLoading: boolean;
+  isBetting: boolean;
+}
+
+const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isBetting }) => {
+  const { publicKey } = useWallet();
+  const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
+  const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+  const [betAmount, setBetAmount] = useState<number>(0);
+
+  useEffect(() => {
+    fetchAvailablePlayers();
+  }, []);
+
+  const fetchAvailablePlayers = async () => {
+    try {
+      const response = await fetch('/api/available-players');
+      const data = await response.json();
+      setAvailablePlayers(data);
+    } catch (error) {
+      console.error('Error fetching players:', error);
+    }
+  };
+
+  const handleBetSubmit = async () => {
+    if (!publicKey || !selectedPlayer) return;
+
+    try {
+      await onBetSubmit({
+        playerId: selectedPlayer,
+        amount: betAmount
+      });
+      
+      // Reset form after successful bet
+      setBetAmount(0);
+      setSelectedPlayer(null);
+    } catch (error) {
+      console.error('Error placing bet:', error);
+    }
+  };
+
+  return (
+    <div className="p-4 space-y-4">
+      <h3 className="text-xl font-bold text-white mb-4">Place Your Bet</h3>
+      
+      <div className="space-y-4">
+        {/* Players List */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">Select Player</label>
+          <div className="grid gap-2">
+            {availablePlayers.map(player => (
+              <button
+                key={player.id}
+                onClick={() => setSelectedPlayer(player.id)}
+                className={`p-3 rounded-lg transition-all ${
+                  selectedPlayer === player.id
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+                disabled={isLoading || isBetting}
+              >
+                <div className="flex justify-between items-center">
+                  <span>{player.username}</span>
+                  <span className="text-sm opacity-75">Rating: {player.rating}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bet Amount Input */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Bet Amount</label>
+          <input
+            type="number"
+            value={betAmount}
+            onChange={(e) => setBetAmount(Number(e.target.value))}
+            className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500"
+            placeholder="Enter amount"
+            disabled={isLoading || isBetting}
+          />
+        </div>
+
+        {/* Submit Button */}
+        <button 
+          onClick={handleBetSubmit}
+          disabled={!selectedPlayer || betAmount <= 0 || isLoading || isBetting}
+          className={`w-full py-3 rounded-lg font-medium transition-all ${
+            isLoading || isBetting
+              ? 'bg-gray-600 cursor-not-allowed'
+              : 'bg-indigo-600 hover:bg-indigo-700'
+          } text-white`}
+        >
+          {isLoading ? 'Processing...' : 'Place Bet'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default BettingPanel; 

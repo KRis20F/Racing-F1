@@ -1,0 +1,252 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #2D1B69;
+    --color-secondary: #4B2A9D;
+    --color-accent: #7834BE;
+    --color-background: #111C44;
+    --color-text-primary: #a0aec0;
+  }
+
+  html {
+    @apply bg-gray-900 text-white;
+  }
+
+  body {
+    @apply min-h-screen bg-gradient-to-br from-[#2D1B69] via-[#4B2A9D] to-[#7834BE] transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-lg bg-white/10 
+      border border-white/20 
+      hover:border-white/40 
+      transition-all duration-300;
+  }
+
+  .input-style {
+    @apply w-full px-4 py-2 rounded-lg 
+      border border-gray-200 
+      focus:outline-none focus:ring-2 
+      focus:ring-indigo-500 bg-gray-50;
+  }
+
+  .btn-primary {
+    @apply w-full bg-indigo-600 text-white 
+      py-3 rounded-lg font-semibold 
+      hover:bg-indigo-700 
+      transition-colors;
+  }
+
+  .icon-style {
+    @apply w-10 h-10 flex items-center justify-center 
+      border border-gray-200 rounded-full 
+      text-gray-600 hover:text-indigo-600 
+      hover:border-indigo-600 
+      transition-colors text-xl;
+  }
+
+  /* Skeleton Components */
+  .skeleton-base {
+    @apply relative overflow-hidden;
+    background: #1B254B;
+  }
+
+  .skeleton-pulse {
+    @apply animate-pulse;
+  }
+
+  .skeleton-wave {
+    @apply relative overflow-hidden;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #1B254B 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+}
+
+/* Animaciones */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Efectos de humo */
+@keyframes smoke {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(100px, -5px) scale(1.4);
+    opacity: 0.12;
+  }
+  75% {
+    opacity: 0.08;
+  }
+  100% {
+    transform: translate(200px, -10px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes smoke-left {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.12;
+  }
+  50% {
+    transform: translate(-80px, -5px) scale(1.3);
+    opacity: 0.1;
+  }
+  75% {
+    opacity: 0.06;
+  }
+  100% {
+    transform: translate(-160px, -10px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes smoke-up {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.1;
+  }
+  50% {
+    transform: translate(40px, -80px) scale(1.4);
+    opacity: 0.08;
+  }
+  75% {
+    opacity: 0.05;
+  }
+  100% {
+    transform: translate(80px, -160px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@layer components {
+  .smoke-particle {
+    @apply absolute w-[300px] h-[300px] rounded-full pointer-events-none;
+    background: radial-gradient(circle, rgba(220,220,220,0.15) 0%, rgba(220,220,220,0) 70%);
+    mix-blend-mode: overlay;
+    filter: blur(8px);
+  }
+
+  .smoke-container {
+    @apply absolute w-[600px] h-[300px] z-20 overflow-visible;
+  }
+
+  .main-smoke {
+    @apply right-[32%] bottom-[12%];
+  }
+
+  .secondary-smoke {
+    @apply right-[25%] bottom-[10%];
+  }
+
+  .left-smoke {
+    @apply right-[40%] bottom-[15%];
+  }
+
+  .right-smoke {
+    @apply right-[20%] bottom-[8%];
+  }
+
+  .background-smoke {
+    @apply right-[28%] bottom-[5%];
+  }
+}
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
+/* Animaciones específicas de humo */
+.smoke-1, .smoke-2, .smoke-3, .smoke-4 { animation: smoke 5s infinite; }
+.smoke-5, .smoke-6, .smoke-7 { animation: smoke 5s infinite 1.5s; }
+.smoke-8, .smoke-9, .smoke-10 { animation: smoke-left 6s infinite 1s; }
+.smoke-11, .smoke-12, .smoke-13 { animation: smoke 6s infinite 2s; }
+.smoke-14, .smoke-15, .smoke-16 { animation: smoke-up 7s infinite 0.5s; }
+
+/* Ajustes individuales de opacidad y retrasos */
+.smoke-1 { animation-delay: 0s; }
+.smoke-2 { animation-delay: 1s; }
+.smoke-3 { animation-delay: 2s; }
+.smoke-4 { animation-delay: 3s; }
+.smoke-5 { animation-delay: 0.5s; @apply opacity-[0.08]; }
+.smoke-6 { animation-delay: 1.5s; @apply opacity-[0.07]; }
+.smoke-7 { animation-delay: 2.5s; @apply opacity-[0.06]; }
+.smoke-8 { animation-delay: 0.8s; @apply opacity-[0.09]; }
+.smoke-9 { animation-delay: 1.8s; @apply opacity-[0.08]; }
+.smoke-10 { animation-delay: 2.8s; @apply opacity-[0.07]; }
+.smoke-11 { animation-delay: 1.2s; @apply opacity-[0.08]; }
+.smoke-12 { animation-delay: 2.2s; @apply opacity-[0.07]; }
+.smoke-13 { animation-delay: 3.2s; @apply opacity-[0.06]; }
+.smoke-14 { animation-delay: 0.3s; @apply opacity-[0.05]; }
+.smoke-15 { animation-delay: 1.3s; @apply opacity-[0.04]; }
+.smoke-16 { animation-delay: 2.3s; @apply opacity-[0.03]; }
+
+/* Skeleton Animations */
+.skeleton-wave::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
