@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { marketplaceService } from '../services/marketplaceService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { marketplaceEndpoints } from '../api/endpoints/marketplace.endpoints';
 import type {
   ListingsResponse,
   SellRequest,
@@ -9,21 +9,37 @@ import type {
 } from '../api/endpoints/marketplace.endpoints';
 
 export const useMarketplace = () => {
+  const queryClient = useQueryClient();
+
+  // Query para obtener listados
   const {
     data: listings,
     isLoading: isLoadingListings,
-    error: listingsError
+    error: listingsError,
+    refetch: refetchListings
   } = useQuery<ListingsResponse>({
     queryKey: ['marketplace', 'listings'],
-    queryFn: marketplaceService.getListings
+    queryFn: marketplaceEndpoints.getListings
   });
 
+  // Mutation para vender
   const sellCarMutation = useMutation<SellResponse, Error, SellRequest>({
-    mutationFn: marketplaceService.sellCar
+    mutationFn: marketplaceEndpoints.sellCar,
+    onSuccess: () => {
+      // Invalidar queries relacionadas al completar la venta
+      queryClient.invalidateQueries({ queryKey: ['marketplace', 'listings'] });
+      queryClient.invalidateQueries({ queryKey: ['userCars'] });
+    }
   });
 
+  // Mutation para comprar
   const buyCarMutation = useMutation<BuyResponse, Error, BuyRequest>({
-    mutationFn: marketplaceService.buyCar
+    mutationFn: marketplaceEndpoints.buyCar,
+    onSuccess: () => {
+      // Invalidar queries relacionadas al completar la compra
+      queryClient.invalidateQueries({ queryKey: ['marketplace', 'listings'] });
+      queryClient.invalidateQueries({ queryKey: ['userCars'] });
+    }
   });
 
   return {
@@ -31,6 +47,7 @@ export const useMarketplace = () => {
     listings,
     isLoadingListings,
     listingsError,
+    refetchListings,
 
     // Mutations
     sellCar: sellCarMutation.mutate,
