@@ -2,7 +2,7 @@ import { api } from '../api.config';
 
 // Tipos
 export interface Car {
-  id: string;
+  id: number; //? Se ha cambiado a number
   name: string;
   category: string;
   price: number;

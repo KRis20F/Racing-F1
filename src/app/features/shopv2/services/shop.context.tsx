@@ -1,15 +1,16 @@
 import { createContext, useState, type ReactNode } from 'react';
 import type { Car } from "@/app/api/endpoints/cars.endpoints";
 import { resolveObjectURL } from 'buffer';
+import { useMarketplace } from '@/app/hooks/useMarketplace';
 
 type ShopContextType = {
-    buyCar: (car: Car) => void;
+    handleBuy: (car: Car) => void;
     cars: Car[];
     setCars: React.Dispatch<React.SetStateAction<Car[]>>;
 }
 
 export const ShopContext = createContext<ShopContextType>({
-    buyCar: (car: Car) => car,
+    handleBuy: (car: Car) => car,
     cars: [],
     setCars: () => { },
 });
@@ -17,25 +18,52 @@ export const ShopContext = createContext<ShopContextType>({
 export function ShopContextProvider({ children }: { children: ReactNode }) {
 
 
+
     const [cars, setCars] = useState<Car[]>([]);
 
+    const {
+        listings,
+        isLoadingListings,
+        sellCar,
+        buyCar,
+        isSellingCar,
+        isBuyingCar
+    } = useMarketplace();
 
-    const buyCar = (car: Car) => {
 
-        let userInfo = localStorage.getItem('user');
 
-        if (!userInfo) {
-            console.error("El usuario no esta en el localStorage");
+
+    const handleBuy = async (car: Car) => {
+        const userString = localStorage.getItem('user');
+
+        if (!userString) {
+            console.error("El usuario no está en el localStorage");
             return;
         }
 
-        userInfo = JSON.parse(userInfo);
-        
+        const currentUser = JSON.parse(userString);
+
+        if (typeof currentUser.id !== 'number') {
+            console.error("El id del usuario no es un número válido");
+            return;
+        }
+
+        try {
+            await buyCar({
+                listingId: car.id,
+                buyerId: currentUser.id
+            });
+
+            setCars((prevCars) => prevCars.filter((carItem) =>  carItem.id !== car.id))
+
+        } catch (error) {
+            console.error(error);
+        }
     };
 
 
     return (
-        <ShopContext.Provider value={{ buyCar, cars, setCars }}>
+        <ShopContext.Provider value={{ handleBuy, cars, setCars }}>
             {children}
         </ShopContext.Provider>
     );
