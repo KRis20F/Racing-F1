@@ -11,11 +11,10 @@ import Navbar from "../UI/Navbar";
 import RaceTrack from "../features/game/components/RaceTrack";
 import AuthContainer from "../features/auth/AuthForm";
 import Dashboard from "../features/userDashboard/Dashboard";
-import Shop from "../features/shop/Shop";
 import Billing from "../features/userDashboard/components/Billing/Index";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Home from "../features/home/Home";
-import { Garage } from "../features/userDashboard/components/Garage";
+import { ShopPage } from "../features/shopv2/ShopV2";
 
 const LandingPage = () => {
   return (
@@ -62,7 +61,7 @@ const Routes = () => {
         <Route
           path="shop"
           element={
-              <Shop />
+              <ShopPage />
           }
         />
         <Route

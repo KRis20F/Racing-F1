@@ -396,165 +396,165 @@ const CarCard: React.FC<CarCardProps> = ({ car, onAddToCart, onAddToWishlist, is
   );
 };
 
-const Shop = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [sortBy, setSortBy] = useState('name');
-  const [wishlist, setWishlist] = useState<string[]>([]);
-  const [cartItems, setCartItems] = useState<CarModel[]>([]);
+// const Shop = () => {
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [searchQuery, setSearchQuery] = useState('');
+//   const [selectedCategory, setSelectedCategory] = useState('All');
+//   const [sortBy, setSortBy] = useState('name');
+//   const [wishlist, setWishlist] = useState<string[]>([]);
+//   const [cartItems, setCartItems] = useState<CarModel[]>([]);
 
-  const categories = ['All', ...Array.from(new Set(carModels.map(car => car.category)))];
+//   const categories = ['All', ...Array.from(new Set(carModels.map(car => car.category)))];
 
-  const filteredCars = carModels
-    .filter(car => 
-      (selectedCategory === 'All' || car.category === selectedCategory) &&
-      car.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === 'price-asc') return a.price - b.price;
-      if (sortBy === 'price-desc') return b.price - a.price;
-      return a.name.localeCompare(b.name);
-    });
+//   const filteredCars = carModels
+//     .filter(car => 
+//       (selectedCategory === 'All' || car.category === selectedCategory) &&
+//       car.name.toLowerCase().includes(searchQuery.toLowerCase())
+//     )
+//     .sort((a, b) => {
+//       if (sortBy === 'price-asc') return a.price - b.price;
+//       if (sortBy === 'price-desc') return b.price - a.price;
+//       return a.name.localeCompare(b.name);
+//     });
 
-  useEffect(() => {
-    // Preload first model
-    useGLTF.preload(carModels[0].modelPath);
+//   useEffect(() => {
+//     // Preload first model
+//     useGLTF.preload(carModels[0].modelPath);
     
-    // After a short delay, start loading the rest
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      // Preload remaining models in background
-      carModels.slice(1).forEach(car => {
-        useGLTF.preload(car.modelPath);
-      });
-    }, 1500);
+//     // After a short delay, start loading the rest
+//     const timer = setTimeout(() => {
+//       setIsLoading(false);
+//       // Preload remaining models in background
+//       carModels.slice(1).forEach(car => {
+//         useGLTF.preload(car.modelPath);
+//       });
+//     }, 1500);
 
-    return () => clearTimeout(timer);
-  }, []);
+//     return () => clearTimeout(timer);
+//   }, []);
 
-  const handleAddToWishlist = (car: CarModel) => {
-    setWishlist(prev => 
-      prev.includes(car.id)
-        ? prev.filter(id => id !== car.id)
-        : [...prev, car.id]
-    );
-  };
+//   const handleAddToWishlist = (car: CarModel) => {
+//     setWishlist(prev => 
+//       prev.includes(car.id)
+//         ? prev.filter(id => id !== car.id)
+//         : [...prev, car.id]
+//     );
+//   };
 
-  const handleAddToCart = (car: CarModel) => {
-    setCartItems(prev => [...prev, car]);
-    // Here you would typically integrate with your cart context/state management
-  };
+//   const handleAddToCart = (car: CarModel) => {
+//     setCartItems(prev => [...prev, car]);
+//     // Here you would typically integrate with your cart context/state management
+//   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
-      {isLoading && <LoadingScreen />}
+//   return (
+//     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+//       {isLoading && <LoadingScreen />}
       
-      {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 shadow-2xl relative">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-5xl font-bold text-white flex items-center gap-4 font-racing">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              Exclusive Car Collection
-            </h1>
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                </svg>
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartItems.length}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <p className="text-gray-200 text-center max-w-3xl mx-auto text-lg">
-            Experience the thrill of owning legendary racing machines. Each model is a masterpiece of engineering and design.
-          </p>
-        </div>
-      </div>
+//       {/* Header */}
+//       <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 shadow-2xl relative">
+//         <div className="absolute inset-0 bg-black/20" />
+//         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative">
+//           <div className="flex items-center justify-between mb-4">
+//             <h1 className="text-5xl font-bold text-white flex items-center gap-4 font-racing">
+//               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+//               </svg>
+//               Exclusive Car Collection
+//             </h1>
+//             <div className="flex items-center gap-4">
+//               <div className="relative">
+//                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+//                   <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+//                 </svg>
+//                 {cartItems.length > 0 && (
+//                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+//                     {cartItems.length}
+//                   </span>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+//           <p className="text-gray-200 text-center max-w-3xl mx-auto text-lg">
+//             Experience the thrill of owning legendary racing machines. Each model is a masterpiece of engineering and design.
+//           </p>
+//         </div>
+//       </div>
 
-      {/* Filters and Search */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
-          <div className="flex gap-4 items-center">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search cars..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-gray-800 text-white px-4 py-2 rounded-xl pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <svg
-                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-              </svg>
-            </div>
+//       {/* Filters and Search */}
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//         <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
+//           <div className="flex gap-4 items-center">
+//             <div className="relative">
+//               <input
+//                 type="text"
+//                 placeholder="Search cars..."
+//                 value={searchQuery}
+//                 onChange={(e) => setSearchQuery(e.target.value)}
+//                 className="bg-gray-800 text-white px-4 py-2 rounded-xl pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+//               />
+//               <svg
+//                 className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 viewBox="0 0 20 20"
+//                 fill="currentColor"
+//               >
+//                 <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+//               </svg>
+//             </div>
 
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-gray-800 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
+//             <select
+//               value={selectedCategory}
+//               onChange={(e) => setSelectedCategory(e.target.value)}
+//               className="bg-gray-800 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+//             >
+//               {categories.map(category => (
+//                 <option key={category} value={category}>{category}</option>
+//               ))}
+//             </select>
+//           </div>
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-gray-800 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <option value="name">Sort by Name</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
-        </div>
+//           <select
+//             value={sortBy}
+//             onChange={(e) => setSortBy(e.target.value)}
+//             className="bg-gray-800 text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+//           >
+//             <option value="name">Sort by Name</option>
+//             <option value="price-asc">Price: Low to High</option>
+//             <option value="price-desc">Price: High to Low</option>
+//           </select>
+//         </div>
 
-        {/* Results Count */}
-        <p className="text-gray-400 mb-6">
-          Showing {filteredCars.length} {filteredCars.length === 1 ? 'car' : 'cars'}
-        </p>
+//         {/* Results Count */}
+//         <p className="text-gray-400 mb-6">
+//           Showing {filteredCars.length} {filteredCars.length === 1 ? 'car' : 'cars'}
+//         </p>
 
-        {/* Car Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          <AnimatePresence>
-            {filteredCars.map((car) => (
-              <CarCard
-                key={car.id}
-                car={car}
-                onAddToCart={handleAddToCart}
-                onAddToWishlist={handleAddToWishlist}
-                isInWishlist={wishlist.includes(car.id)}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
+//         {/* Car Grid */}
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+//           <AnimatePresence>
+//             {filteredCars.map((car) => (
+//               <CarCard
+//                 key={car.id}
+//                 car={car}
+//                 onAddToCart={handleAddToCart}
+//                 onAddToWishlist={handleAddToWishlist}
+//                 isInWishlist={wishlist.includes(car.id)}
+//               />
+//             ))}
+//           </AnimatePresence>
+//         </div>
+//       </div>
 
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 mt-20">
-        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-white text-sm font-medium">
-            © 2024 F1 Racing Challenge Shop. All rights reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
-};
+//       {/* Footer */}
+//       <footer className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 mt-20">
+//         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+//           <p className="text-center text-white text-sm font-medium">
+//             © 2024 F1 Racing Challenge Shop. All rights reserved.
+//           </p>
+//         </div>
+//       </footer>
+//     </div>
+//   );
+// };
 
-export default Shop; 
+// export default Shop; 
