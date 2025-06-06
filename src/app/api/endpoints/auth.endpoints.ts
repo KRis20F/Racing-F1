@@ -6,7 +6,7 @@ import type {
   ChangePasswordData,
   UpdateProfileData,
   UserData
-} from '@types/api/auth.types';
+} from '../../types/api/auth.types';
 
 export const authEndpoints = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {

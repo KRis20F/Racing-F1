@@ -1,6 +1,20 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../api/mutations/auth.mutations";
+import { useWallet } from '../../hooks/useWallet';
+import { WalletDialog } from '../../UI/WalletDialog';
+import type { WelcomeGifts } from '../../services/walletService';
+
+interface AuthResponse {
+  token: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    publicKey?: string;
+    welcomeGifts?: WelcomeGifts;
+  };
+}
 
 // Obtener el base path de Vite
 const BASE_PATH = import.meta.env.BASE_URL || '/';
@@ -12,6 +26,7 @@ const AuthContainer = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "", fechaNacimiento: "" });
   const [successMessage, setSuccessMessage] = useState("");
+  const { showWelcomeGifts, welcomeGifts, showGifts, hideGifts } = useWallet();
 
   const {
     login,
@@ -49,34 +64,34 @@ const AuthContainer = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccessMessage("");
 
-    const trimmedEmail = form.email.trim();
-    const trimmedPassword = form.password.trim();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
 
-    if (!trimmedEmail || !trimmedPassword) {
-      return;
-    }
-
-    if (isRegistering) {
-      const trimmedUsername = form.username.trim();
-      if (!trimmedUsername) {
-        return;
+    try {
+      if (isRegistering) {
+        const username = formData.get('username') as string;
+        const fechaNacimiento = formData.get('fechaNacimiento') as string;
+        
+        const response = await register({ username, email, password, fechaNacimiento });
+        
+        // Mostrar los regalos de bienvenida si existen
+        if (response?.user?.welcomeGifts) {
+          showGifts(response.user.welcomeGifts);
+        }
+        
+        // Navegar al dashboard después de mostrar los regalos o inmediatamente si no hay
+        navigate(`${BASE_PATH}dashboard`, { replace: true });
+      } else {
+        await login({ email, password });
+        navigate(`${BASE_PATH}dashboard`, { replace: true });
       }
-
-      register({
-        username: trimmedUsername,
-        email: trimmedEmail,
-        password: trimmedPassword,
-        fechaNacimiento: form.fechaNacimiento
-      });
-    } else {
-      login({
-        email: trimmedEmail,
-        password: trimmedPassword
-      });
+    } catch (err) {
+      setSuccessMessage(err instanceof Error ? err.message : 'Error en la autenticación');
     }
   };
 
@@ -198,6 +213,12 @@ const AuthContainer = () => {
           </div>
         </div>
       </div>
+
+      <WalletDialog
+        isOpen={showWelcomeGifts}
+        onClose={hideGifts}
+        welcomeGifts={welcomeGifts || undefined}
+      />
     </div>
   );
 };

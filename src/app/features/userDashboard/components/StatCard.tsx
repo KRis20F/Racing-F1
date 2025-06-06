@@ -1,27 +1,32 @@
+import React from 'react';
+
 interface StatCardProps {
   title: string;
-  value: string;
+  value: string | number;
   change: string;
   icon: React.ReactNode;
 }
 
-const StatCard = ({ title, value, change, icon }: StatCardProps) => {
+export const StatCard = ({ title, value, change, icon }: StatCardProps) => {
   const isPositive = change.startsWith('+');
-  
   return (
-    <div className="bg-[#111C44] rounded-2xl p-6 hover:scale-[1.02] transition-transform duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className="w-12 h-12 bg-indigo-600/20 rounded-lg flex items-center justify-center text-indigo-500">
-          {icon}
+    <div className="bg-[#111C44] rounded-[20px] p-4 relative overflow-hidden">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-2xl font-bold text-white mb-1">{value}</h3>
+          <div className="flex items-center gap-2">
+            <p className="text-gray-400 text-sm">{title}</p>
+            <span className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+              {change}
+            </span>
+          </div>
         </div>
-        <span className={`text-sm font-semibold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-          {change}
-        </span>
+        <div className="w-12 h-12 rounded-xl bg-[#4318FF]/10 flex items-center justify-center backdrop-blur-sm">
+          <div className="text-[#4318FF]">
+            {icon}
+          </div>
+        </div>
       </div>
-      <div className="text-gray-400 text-sm">{title}</div>
-      <div className="text-2xl font-bold text-white mt-1">{value}</div>
     </div>
   );
 };
-
-export default StatCard; 

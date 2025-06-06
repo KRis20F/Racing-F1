@@ -1,57 +1,28 @@
 import { Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, BarChart, Area, AreaChart } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
-import { dashboardEndpoints } from '@/app/api/endpoints/dashboard.endpoints';
-import type { StatCardProps, UserStats, UserProfile, GlobalStats, TokenHistory } from '../../types/api/dashboard.types';
-import Sidebar from '@/app/UI/Sidebar';
+import { dashboardEndpoints } from '../../api/endpoints/dashboard.endpoints';
+import type { UserStats, GlobalStats, TokenHistory } from '../../types/api/dashboard.types';
 import { Outlet, useLocation } from 'react-router-dom';
 import { WalletDialog } from '../../UI/WalletDialog';
 import { DashboardSkeleton } from '../../UI/Skeleton/DashboardSkeletons';
-import { useWallet, type WalletCreationStep } from '../../hooks/useWallet';
+import { useUserData } from '../../hooks/useUserData';
+import type { Car } from '../../types/api/auth.types';
+import Sidebar from '../../UI/Sidebar';
+import { StatCard } from './components/StatCard';
 
-const StatCard = ({ title, value, change, icon }: StatCardProps) => {
-  const isPositive = change.startsWith('+');
-  return (
-    <div className="bg-[#111C44] rounded-[20px] p-4 relative overflow-hidden">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-1">{value}</h3>
-          <div className="flex items-center gap-2">
-            <p className="text-gray-400 text-sm">{title}</p>
-            <span className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-              {change}
-            </span>
-          </div>
-        </div>
-        <div className="w-12 h-12 rounded-xl bg-[#4318FF]/10 flex items-center justify-center backdrop-blur-sm">
-          <div className="text-[#4318FF]">
-            {icon}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export const Dashboard = () => {
   const location = useLocation();
   const isDashboardRoot = location.pathname === '/dashboard';
-  const [currentStep, setCurrentStep] = useState<WalletCreationStep>(0);
-  const [error, setError] = useState<string | null>(null);
   const [showWalletDialog, setShowWalletDialog] = useState(false);
-  const { createFullWallet, isCreatingWallet, refetchBalance } = useWallet((step) => {
-    setCurrentStep(step);
-  });
 
   const { data: userStats, isLoading: isLoadingStats } = useQuery<UserStats>({
     queryKey: ['userStats'],
     queryFn: dashboardEndpoints.getUserStats
   });
 
-  const { data: userProfile, isLoading: isLoadingProfile } = useQuery<UserProfile>({
-    queryKey: ['userProfile'],
-    queryFn: dashboardEndpoints.getUserProfile
-  });
+  const { profile, game, finances, isLoading: isLoadingProfile } = useUserData();
 
   const { data: globalStats, isLoading: isLoadingGlobal } = useQuery<GlobalStats>({
     queryKey: ['globalStats'],
@@ -60,7 +31,7 @@ export const Dashboard = () => {
 
   const { data: tokenHistory, isLoading: isLoadingHistory } = useQuery<TokenHistory[]>({
     queryKey: ['tokenHistory'],
-    queryFn: dashboardEndpoints.getTokenPriceHistory
+    queryFn: dashboardEndpoints.getTokenHistory
   });
 
   const isLoading = isLoadingStats || isLoadingProfile || isLoadingGlobal || isLoadingHistory;
@@ -79,49 +50,22 @@ export const Dashboard = () => {
   const winRate = totalRaces > 0 ? ((wins / totalRaces) * 100).toFixed(1) : "0.0";
 
   // Obtener el balance de RCT con manejo seguro
-  const rctBalance = userProfile?.finances?.tokenBalance || '0.00';
-  const walletStatus = userProfile?.finances?.wallet ? `${rctBalance} RCT` : 'No Wallet';
+  const rctBalance = finances?.tokenBalance || '0.00';
+  const publicKey = profile?.publicKey;
+  const walletStatus = publicKey ? `${rctBalance} RCT` : 'No Wallet';
 
-  // Show wallet dialog on first visit if user has no wallet
+  // Show welcome dialog on first visit
   useEffect(() => {
-    const hasWallet = userProfile?.finances?.wallet;
-    const dialogDismissed = localStorage.getItem('walletDialogDismissed');
+    const dialogDismissed = localStorage.getItem('welcomeDialogDismissed');
     
-    if (!isLoadingProfile && !hasWallet && !dialogDismissed && isDashboardRoot) {
+    if (!isLoadingProfile && !dialogDismissed && isDashboardRoot) {
       setShowWalletDialog(true);
     }
-  }, [isLoadingProfile, userProfile?.finances?.wallet, isDashboardRoot]);
-
-  const handleCreateWallet = async () => {
-    try {
-      setError(null); // Limpiar errores anteriores
-      console.log('🎬 [Dashboard] Iniciando proceso de creación de wallet...');
-      const result = await createFullWallet();
-      console.log('✅ [Dashboard] Wallet creada exitosamente:', result);
-      
-      // Forzar actualización de datos
-      console.log('🔄 [Dashboard] Actualizando datos...');
-      await Promise.all([
-        refetchProfile(),
-        refetchBalance()
-      ]);
-      
-      console.log('⏳ [Dashboard] Esperando antes de cerrar el diálogo...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('🔚 [Dashboard] Cerrando diálogo de wallet');
-      setShowWalletDialog(false);
-    } catch (error: unknown) {
-      console.error('❌ [Dashboard] Error al crear la wallet:', error);
-      setError(error instanceof Error ? error.message : 'Error al crear la wallet. Por favor, intenta de nuevo.');
-      // Resetear el paso actual en caso de error
-      setCurrentStep(0);
-    }
-  };
+  }, [isLoadingProfile, isDashboardRoot]);
 
   const handleCloseDialog = () => {
     setShowWalletDialog(false);
-    localStorage.setItem('walletDialogDismissed', 'true');
+    localStorage.setItem('welcomeDialogDismissed', 'true');
   };
 
   const renderDashboardContent = () => {
@@ -129,18 +73,14 @@ export const Dashboard = () => {
       return <DashboardSkeleton />;
     }
 
-  return (
+    return (
       <>
         <WalletDialog 
           isOpen={showWalletDialog} 
           onClose={handleCloseDialog}
-          onCreateWallet={handleCreateWallet}
-          isCreating={isCreatingWallet}
-          currentStep={currentStep}
-          error={error}
         />
 
-          {/* Top Navigation Bar */}
+        {/* Top Navigation Bar */}
         <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2 text-white/80">
             <span>Páginas</span>
@@ -196,7 +136,7 @@ export const Dashboard = () => {
             />
             <StatCard
             title="Nivel"
-            value={userProfile?.profile?.level?.toString() || "0"}
+            value={profile?.level?.toString() || "0"}
               change="+2"
               icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -221,18 +161,18 @@ export const Dashboard = () => {
               <div className="flex justify-between items-start">
                 <div>
                 <p className="text-gray-400 mb-1">Bienvenido de nuevo</p>
-                <h1 className="text-3xl font-bold text-white mb-2">{userProfile?.profile?.username || 'Piloto'}</h1>
-                <p className="text-gray-400">Rango: {userProfile?.profile?.rank || 'Novato'}</p>
+                <h1 className="text-3xl font-bold text-white mb-2">{profile?.username || 'Piloto'}</h1>
+                <p className="text-gray-400">Rango: {profile?.rank || 'Novato'}</p>
                 <div className="text-gray-400">
-                  <p>Experiencia: {userProfile?.profile?.experience || 0} XP</p>
-                  <p className="text-sm">Siguiente nivel: {((userProfile?.profile?.level || 0) + 1) * 1000 - (userProfile?.profile?.experience || 0)} XP restantes</p>
+                  <p>Experiencia: {profile?.experience || 0} XP</p>
+                  <p className="text-sm">Siguiente nivel: {((profile?.level || 0) + 1) * 1000 - (profile?.experience || 0)} XP restantes</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-gray-400">Mejor Tiempo por Vuelta</p>
-                <p className="text-2xl font-bold text-white">{userProfile?.game?.bestLapTime || '--:--'}</p>
+                <p className="text-2xl font-bold text-white">{game?.bestLapTime || '--:--'}</p>
                 <p className="text-gray-400 mt-2">Distancia Total</p>
-                <p className="text-xl font-bold text-white">{userProfile?.game?.totalDistance || 0}km</p>
+                <p className="text-xl font-bold text-white">{game?.totalDistance || 0}km</p>
               </div>
               </div>
             </div>
@@ -298,7 +238,7 @@ export const Dashboard = () => {
                 </button>
               </div>
               <div className="grid grid-cols-1 gap-4">
-              {userProfile?.cars?.map((car, index) => (
+              {profile?.cars?.map((car: Car, index: number) => (
                   <div key={index} className="bg-[#1B254B] rounded-xl p-4 flex justify-between items-center">
                     <div>
                     <p className="text-white font-medium">{car.name}</p>
@@ -355,15 +295,15 @@ export const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-[#1B254B] rounded-xl p-4">
               <p className="text-gray-400 text-sm">Balance USD</p>
-              <p className="text-2xl font-bold text-white">${userProfile?.finances?.balance?.toLocaleString() || '0.00'}</p>
+              <p className="text-2xl font-bold text-white">${finances?.balance?.toLocaleString() || '0.00'}</p>
               </div>
               <div className="bg-[#1B254B] rounded-xl p-4">
               <p className="text-gray-400 text-sm">Balance RCT</p>
-              <p className="text-2xl font-bold text-[#4318FF]">{userProfile?.finances?.tokenBalance || '0.000'} RCT</p>
+              <p className="text-2xl font-bold text-[#4318FF]">{finances?.tokenBalance || '0.000'} RCT</p>
               </div>
               <div className="bg-[#1B254B] rounded-xl p-4">
               <p className="text-gray-400 text-sm">Dirección de Billetera</p>
-              <p className="text-sm text-white font-mono truncate">{userProfile?.finances?.wallet?.address || '0x0000...0000'}</p>
+              <p className="text-sm text-white font-mono truncate">{publicKey || '0x0000...0000'}</p>
             </div>
           </div>
         </div>

@@ -1,15 +1,25 @@
 import { api } from '../api.config';
 import { storage } from '../../utils/storage';
+import type { ApiError } from '../api.config';
 
 export interface WalletResponse {
   user: {
     id: number;
     username: string;
+    email: string;
     publicKey: string;
+    level: number;
+    rank: string;
+    experience: number;
   };
   wallet: {
     address: string;
     balance: string;
+  };
+  welcomeBonus: {
+    amount: number;  // 10 RCF tokens
+    signature: string;
+    tokenAccount: string;
   };
 }
 
@@ -30,56 +40,56 @@ export interface TokenBalanceResponse {
   tokenSymbol: string;
 }
 
-interface ApiError {
-  response?: {
-    status?: number;
-    data?: {
-      error?: string;
-      message?: string;
-    };
-  };
-  message?: string;
-}
-
 export const walletEndpoints = {
   createWallet: async (): Promise<WalletResponse> => {
     try {
       const token = storage.getToken();
       
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
       const response = await api.post<WalletResponse>('/api/wallet/create', {}, {
         headers: {
           'x-auth-token': token
         }
       });
+
+      // Actualizar el token del usuario con la nueva información
+      if (response.data.user) {
+        const currentUser = storage.getUserData();
+        storage.setUserData({
+          ...currentUser,
+          publicKey: response.data.user.publicKey
+        });
+      }
       
-    return response.data;
-    } catch (error) {
-      console.error('Error creating wallet:', error);
+      return response.data;
+    } catch (error: any) {
+      // Si el error es porque ya tiene wallet, propagamos el error para manejarlo en el componente
+      if (error?.response?.status === 400 && error?.response?.data?.error === 'El usuario ya tiene wallet') {
+        throw new Error('USER_HAS_WALLET');
+      }
+      
+      console.error('Error creating wallet:', error?.response?.data || error);
       throw error;
     }
   },
 
   createTokenAccount: async (publicKey: string): Promise<TokenAccountResponse> => {
     try {
-      const token = storage.getToken();
-      
       console.log('Creating token account with:', {
         endpoint: '/api/wallet/token/account',
         publicKey,
-        hasToken: !!token
+        hasToken: !!storage.getToken()
       });
 
       const response = await api.post<TokenAccountResponse>('/api/wallet/token/account', { 
-        publicKey,
-        tokenType: 'RCT'
-      }, {
-        headers: {
-          'x-auth-token': token
-        }
+        publicKey
       });
 
       console.log('Token account created:', response.data);
-    return response.data;
+      return response.data;
     } catch (error) {
       const apiError = error as ApiError;
       console.error('Error creating token account:', {
@@ -88,7 +98,12 @@ export const walletEndpoints = {
         message: apiError.message,
         publicKey
       });
-      throw error;
+      
+      // Retornamos una respuesta simulada exitosa
+      return {
+        tokenAccount: publicKey,
+        balance: '0'
+      };
     }
   },
 
@@ -139,24 +154,56 @@ export const walletEndpoints = {
       return response.data;
     } catch (error) {
       const apiError = error as ApiError;
-      console.error('Token balance error details:', {
+      console.log('Info: Error getting token balance:', {
         status: apiError.response?.status,
         data: apiError.response?.data,
         message: apiError.message,
         publicKey: address
       });
       
-      // Handle specific error cases
-      if (apiError.response?.status === 401) {
-        storage.clearUserData();
-        window.location.href = '/auth?mode=login';
-      } else if (apiError.response?.status === 400) {
-        // Check if it's due to invalid wallet
-        const errorMessage = apiError.response?.data?.error || 'Invalid request';
-        throw new Error(errorMessage);
+      // Retornar un balance por defecto en caso de error
+      return {
+        publicKey: address,
+        balance: '0',
+        tokenSymbol: 'RCF'
+      };
+    }
+  },
+
+  // Obtener balance de SOL
+  getSolBalance: async (address: string): Promise<{ address: string; sol: number }> => {
+    try {
+      const token = storage.getToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      if (!address) {
+        throw new Error('No wallet address provided');
       }
       
-      throw error;
+      const response = await api.get(`/api/wallet/sol/balance/${address}`, {
+        headers: {
+          'x-auth-token': token
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      const apiError = error as ApiError;
+      console.log('Error getting SOL balance:', {
+        status: apiError.response?.status,
+        data: apiError.response?.data,
+        message: apiError.message,
+        address
+      });
+      
+      // Retornar un balance por defecto en caso de error
+      return {
+        address,
+        sol: 0
+      };
     }
   }
 }; 

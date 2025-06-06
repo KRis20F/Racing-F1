@@ -1,15 +1,13 @@
-import { createContext, useContext, type ReactNode, useEffect, useState } from 'react';
+import React, { createContext, useContext, type ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../api/mutations/auth.mutations';
-import { useUserData } from '../features/userDashboard/hooks/useUserData';
-import type { UserProfile, UserData } from '../types/api/auth.types';
+import type { UserData } from '../types/api/auth.types';
 import { storage } from '../utils/storage';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: UserProfile | null;
   userData: UserData | null;
   logout: () => void;
 }
@@ -17,7 +15,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
-  user: null,
   userData: null,
   logout: () => {},
 });
@@ -41,26 +38,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return !!storage.getToken();
   });
 
-  const [storedUser, setStoredUser] = useState<UserProfile | null>(() => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
-  });
-
-  const { user: apiUser, isLoadingUser } = useAuth();
-  const { profile, game, finances, isLoading: isLoadingUserData } = useUserData();
+  const { user: userData, isLoadingUser } = useAuth();
   const queryClient = useQueryClient();
 
   // Add isLoggingOut state
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Actualizar el usuario cuando cambie en la API
+  // Actualizar autenticación cuando cambie el usuario
   useEffect(() => {
-    if (apiUser) {
-      setStoredUser(apiUser);
+    if (userData) {
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(apiUser));
+      localStorage.setItem('user', JSON.stringify(userData.profile));
     }
-  }, [apiUser]);
+  }, [userData]);
 
   // Verificar autenticación y proteger rutas
   useEffect(() => {
@@ -94,7 +84,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       // 3. Clear React state
       setIsAuthenticated(false);
-      setStoredUser(null);
 
       // 4. Clear all storage data
       storage.clearUserData();
@@ -129,13 +118,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value = {
     isAuthenticated,
-    isLoading: isLoadingUser || isLoadingUserData,
-    user: storedUser,
-    userData: profile && game && finances ? {
-      profile,
-      game,
-      finances
-    } : null,
+    isLoading: isLoadingUser,
+    userData: userData || null,
     logout: handleLogout
   };
 

@@ -15,47 +15,32 @@ export interface UserProfile {
   publicKey: string;
   avatar: string;
   level: number;
+  rank: string;
+  experience: number;
   badges: string[];
   fechaNacimiento: string;
 }
 
 export interface GameData {
-  experience: number;
+  bestLapTime: string;
+  totalDistance: number;
   totalRaces: number;
   wins: number;
   losses: number;
-  rank: string;
-  stats: {
-    bestLapTime: number | null;
-    carCollection: string[];
-    favoriteTrack: string | null;
-    totalDistance: number;
-  };
 }
 
 export interface FinanceData {
+  balance: string;
+  wallet: string;
   tokenBalance: string;
-  usdBalance: string;
-  wallet: {
-    balance: string;
-    address: string;
-  };
-  transaction_limits: {
-    daily_limit: number;
-    monthly_limit: number;
-    max_transaction: number;
-  };
-  billing_preferences: {
-    auto_pay: boolean;
-    invoice_email: string | null;
-    default_currency: string;
-  };
+  recentTransactions?: Transaction[];
 }
 
 export interface UserData {
   profile: UserProfile;
   game: GameData;
   finances: FinanceData;
+  cars: Car[];
 }
 
 export interface AuthResponse {
@@ -73,4 +58,25 @@ export interface UpdateProfileData {
   email?: string;
   avatar?: string;
   fechaNacimiento?: string;
+}
+
+export interface Transaction {
+  id: string;
+  type: 'deposit' | 'withdrawal' | 'transfer';
+  amount: string;
+  currency: string;
+  timestamp: string;
+  status: 'pending' | 'completed' | 'failed';
+}
+
+export interface Car {
+  id: string;
+  name: string;
+  category: string;
+  specs?: {
+    power: string;
+    acceleration: string;
+    topSpeed: string;
+    weight: string;
+  };
 } 

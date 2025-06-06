@@ -115,7 +115,7 @@ const Billing = () => {
   });
 
   // Verificar si el usuario tiene wallet
-  const walletAddress = userProfile?.finances?.wallet?.address;
+  const walletAddress = userProfile?.profile?.publicKey;
   const hasWallet = !!walletAddress;
 
   useEffect(() => {

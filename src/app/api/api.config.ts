@@ -88,4 +88,15 @@ api.interceptors.response.use(
     
     return Promise.reject(error.response?.data || error);
   }
-); 
+);
+
+export interface ApiError {
+  response?: {
+    status?: number;
+    data?: {
+      error?: string;
+      message?: string;
+    };
+  };
+  message?: string;
+} 

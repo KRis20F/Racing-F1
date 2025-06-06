@@ -23,17 +23,39 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
       '@app': resolve(__dirname, './src/app'),
-      '@types': resolve(__dirname, './src/app/types')
+      '@types': resolve(__dirname, './src/app/types'),
+      'buffer': 'buffer/'
     }
   },
-  publicDir: 'public',
+  define: {
+    'process.env': {},
+    'global': {},
+    'Buffer': ['buffer', 'Buffer']
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+      supported: { 
+        bigint: true 
+      },
+    },
+    include: ['buffer']
+  },
   build: {
     target: 'esnext',
     minify: false,
-    sourcemap: true
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react/jsx-runtime']
+    sourcemap: true,
+    commonjsOptions: {
+      transformMixedEsModules: true
+    },
+    rollupOptions: {
+      external: ['buffer'],
+      output: {
+        globals: {
+          buffer: 'Buffer'
+        }
+      }
+    }
   },
   esbuild: {
     jsxInject: `import React from 'react'`
