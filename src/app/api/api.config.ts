@@ -1,19 +1,17 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
 
-export const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 // Crear instancia de axios con configuración base
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  },
-  timeout: 5000,
+    'Content-Type': 'application/json'
+  }
 });
 
-// Interceptor para añadir el token JWT
+// Interceptor para agregar token de autenticación
 api.interceptors.request.use(
   (config) => {
     const token = storage.getToken();
@@ -23,70 +21,46 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('API Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Add retry logic
-api.interceptors.response.use(undefined, async (error) => {
-  const { config } = error;
-  console.log('API Error:', {
-    status: error.response?.status,
-    data: error.response?.data,
-    config: {
-      url: config?.url,
-      method: config?.method,
-      headers: config?.headers
-    }
-  });
-  
-  if (!config || !config.retry) {
-    config.retry = 1;
-    return api(config);
-  }
-  return Promise.reject(error);
-});
-
 // Interceptor para manejar errores
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    console.error('API Error Response:', {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
-    });
+    if (error.response) {
+      // El servidor respondió con un código de error
+      console.error('API Error:', error.response);
+      
+      // Si el error es 401 (no autorizado), limpiar el token
+      if (error.response.status === 401) {
+        storage.clearToken();
+        window.location.href = '/login';
+      }
 
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      // Clear all storage
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Force clear specific items
-      const keysToRemove = [
-        'user',
-        'token',
-        'walletDialogDismissed',
-        'racing_user_data',
-        'persist:root',
-        'lastLogin'
-      ];
-      
-      keysToRemove.forEach(key => {
-        localStorage.removeItem(key);
-        sessionStorage.removeItem(key);
+      // Si el error es 403 (prohibido), redirigir a la página de inicio
+      if (error.response.status === 403) {
+        window.location.href = '/';
+      }
+
+      // Registrar detalles del error para debugging
+      console.error('API Error Response:', {
+        url: error.response.config.url,
+        status: error.response.status,
+        data: error.response.data,
+        message: error.message
       });
-
-      // Force reload to login page
-      window.location.href = '/auth?mode=login';
-      return Promise.reject(new Error('Session expired'));
+    } else if (error.request) {
+      // La petición fue hecha pero no se recibió respuesta
+      console.error('API Error: No response received', error.request);
+    } else {
+      // Algo sucedió al configurar la petición
+      console.error('API Error:', error.message);
     }
-    
-    return Promise.reject(error.response?.data || error);
+
+    return Promise.reject(error);
   }
 );
 

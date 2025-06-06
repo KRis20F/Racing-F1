@@ -1,6 +1,6 @@
 import { useAllCars } from "@/app/hooks/useCars";
 import { CardList } from './components/card-list';
-import { ShopContext, ShopContextProvider } from "./services/shop.context";
+import { ShopContextProvider } from "./services/shop.context";
 
 export function ShopPage() {
 

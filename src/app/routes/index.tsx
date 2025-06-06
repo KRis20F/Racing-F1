@@ -15,7 +15,7 @@ import Billing from "../features/userDashboard/components/Billing/Index";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Home from "../features/home/Home";
 import { ShopPage } from "../features/shopv2/ShopV2";
-import Garage from "../features/userDashboard/components/Garage";
+import { Garage } from "../features/userDashboard/components/Garage";
 
 const LandingPage = () => {
   return (

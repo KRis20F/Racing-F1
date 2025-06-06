@@ -17,10 +17,9 @@ export interface Car {
 }
 
 export interface CarStats {
-  power: string;
-  acceleration: string;
-  topSpeed: string;
-  weight: string;
+  speed: number;
+  handling: number;
+  acceleration: number;
 }
 
 export interface CarListing {
@@ -57,19 +56,34 @@ export const carsEndpoints = {
 
   // Obtener coches del usuario (garage)
   getUserCars: async (userId: string): Promise<Car[]> => {
-    const response = await api.get(`/api/cars/user/${userId}`);
-    return response.data;
+    try {
+      const response = await api.get(`/api/cars/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting user cars:', error);
+      return [];
+    }
   },
 
   // Obtener listado de coches con modelos 3D
   getCarListings: async (): Promise<{ listings: CarListing[] }> => {
-    const response = await api.get('/api/cars/listings');
-    return response.data;
+    try {
+      const response = await api.get('/api/cars/listings');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting car listings:', error);
+      return { listings: [] };
+    }
   },
 
   // Obtener lista de modelos 3D disponibles
   getAvailableModels: async (): Promise<{ models: { id: string; filename: string; size: string; type: string; }[] }> => {
-    const response = await api.get('/api/cars/models');
-    return response.data;
+    try {
+      const response = await api.get('/api/cars/models');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting available models:', error);
+      return { models: [] };
+    }
   }
 }; 

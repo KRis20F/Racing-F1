@@ -1,8 +1,7 @@
-interface UserStorageData {
+export interface UserStorageData {
   token: string | null;
-  publicKey: string | null;
-  username: string | null;
-  lastLogin: string | null;
+  user: any;
+  walletDialogDismissed: boolean;
 }
 
 const STORAGE_KEYS = {
@@ -12,92 +11,76 @@ const STORAGE_KEYS = {
 
 export const storage = {
   // User data management
-  getUserData(): UserStorageData {
-    const data = localStorage.getItem(STORAGE_KEYS.USER_DATA);
-    if (!data) {
-      return {
-        token: null,
-        publicKey: null,
-        username: null,
-        lastLogin: null
-      };
-    }
-    return JSON.parse(data);
-  },
-
-  setUserData(data: Partial<UserStorageData>) {
-    const currentData = this.getUserData();
-    const newData = {
-      ...currentData,
-      ...data,
-      lastLogin: data.token ? new Date().toISOString() : currentData.lastLogin
+  getUserData: (): UserStorageData => {
+    return {
+      token: localStorage.getItem('token'),
+      user: JSON.parse(localStorage.getItem('user') || 'null'),
+      walletDialogDismissed: localStorage.getItem('walletDialogDismissed') === 'true'
     };
-    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(newData));
   },
 
-  clearUserData() {
-    try {
-      // 1. Clear specific keys first
-      Object.values(STORAGE_KEYS).forEach(key => {
-        localStorage.removeItem(key);
-      });
-
-      // 2. Clear additional known keys
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('walletDialogDismissed');
-
-      // 3. Clear all remaining data
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // 4. Double check specific keys are gone
-      if (localStorage.length > 0) {
-        console.warn('Forcing removal of remaining items:', localStorage.length);
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-          const key = localStorage.key(i);
-          if (key) localStorage.removeItem(key);
-        }
-      }
-    } catch (error) {
-      console.error('Error clearing storage:', error);
-      // Last resort: brute force clear
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-      } catch (e) {
-        console.error('Failed to clear storage:', e);
+  setUserData: (data: Partial<UserStorageData>) => {
+    if (data.token !== undefined) {
+      if (data.token === null) {
+        localStorage.removeItem('token');
+      } else {
+        localStorage.setItem('token', data.token);
       }
     }
+    if (data.user !== undefined) {
+      if (data.user === null) {
+        localStorage.removeItem('user');
+      } else {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+    }
+    if (data.walletDialogDismissed !== undefined) {
+      localStorage.setItem('walletDialogDismissed', data.walletDialogDismissed.toString());
+    }
+  },
+
+  clearUserData: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('walletDialogDismissed');
   },
 
   // Specific getters/setters
-  getToken(): string | null {
-    return this.getUserData().token;
+  getToken: () => {
+    return localStorage.getItem('token');
   },
 
-  setToken(token: string | null) {
-    if (!token) {
-      this.clearUserData();
+  setToken: (token: string | null) => {
+    if (token === null) {
+      localStorage.removeItem('token');
     } else {
-      this.setUserData({ token });
+      localStorage.setItem('token', token);
     }
   },
 
-  getPublicKey(): string | null {
-    return this.getUserData().publicKey;
+  getUser: () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   },
 
-  setPublicKey(publicKey: string) {
-    this.setUserData({ publicKey });
+  setUser: (user: any) => {
+    if (user === null) {
+      localStorage.removeItem('user');
+    } else {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
   },
 
   // Wallet dialog management
-  isWalletDialogDismissed(): boolean {
-    return localStorage.getItem(STORAGE_KEYS.WALLET_DIALOG_DISMISSED) === 'true';
+  getWalletDialogDismissed: () => {
+    return localStorage.getItem('walletDialogDismissed') === 'true';
   },
 
-  setWalletDialogDismissed(dismissed: boolean) {
-    localStorage.setItem(STORAGE_KEYS.WALLET_DIALOG_DISMISSED, dismissed.toString());
+  setWalletDialogDismissed: (dismissed: boolean) => {
+    localStorage.setItem('walletDialogDismissed', dismissed.toString());
+  },
+
+  clearToken: () => {
+    localStorage.removeItem('token');
   }
 }; 

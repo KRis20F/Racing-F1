@@ -130,7 +130,7 @@ export const Garage = () => {
                     preset="rembrandt"
                   >
                     <CarModel 
-                      modelPath={selectedCar.modelPath}
+                      modelPath={selectedCar.modelPath.replace('.glb', '')}
                       scale={2}
                       position={[0, -0.5, 0]}
                     />

@@ -16,10 +16,6 @@ export function ShopContextProvider({ children }: { children: ReactNode }) {
         console.log(car);
     };
 
-    const getUserInfo = () => {
-        console.log();
-    }
-
 
     return (
         <ShopContext.Provider value={{ buyCar }}>
