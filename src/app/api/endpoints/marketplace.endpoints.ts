@@ -6,7 +6,7 @@ export interface CarStats {
   acceleration: number;
 }
 
-export interface CarListing {
+export interface MarketplaceListing {
   id: number;
   carId: number;
   name: string;
@@ -16,7 +16,7 @@ export interface CarListing {
 }
 
 export interface ListingsResponse {
-  listings: CarListing[];
+  listings: MarketplaceListing[];
 }
 
 export interface SellRequest {
