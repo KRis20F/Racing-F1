@@ -16,6 +16,25 @@ export interface Car {
   };
 }
 
+export interface CarStats {
+  power: string;
+  acceleration: string;
+  topSpeed: string;
+  weight: string;
+}
+
+export interface CarListing {
+  id: string;
+  carId: string;
+  name: string;
+  price: number;
+  seller: string;
+  stats: CarStats;
+  modelPath: string;
+  modelSize: string;
+  modelType: string;
+}
+
 // Endpoints
 export const carsEndpoints = {
   // Obtener todos los coches
@@ -39,6 +58,18 @@ export const carsEndpoints = {
   // Obtener coches del usuario (garage)
   getUserCars: async (userId: string): Promise<Car[]> => {
     const response = await api.get(`/api/cars/user/${userId}`);
+    return response.data;
+  },
+
+  // Obtener listado de coches con modelos 3D
+  getCarListings: async (): Promise<{ listings: CarListing[] }> => {
+    const response = await api.get('/api/cars/listings');
+    return response.data;
+  },
+
+  // Obtener lista de modelos 3D disponibles
+  getAvailableModels: async (): Promise<{ models: { id: string; filename: string; size: string; type: string; }[] }> => {
+    const response = await api.get('/api/cars/models');
     return response.data;
   }
 }; 

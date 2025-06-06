@@ -4,8 +4,12 @@ import { api } from '../api.config';
 export const authAPI = {
   login: (credentials: { email: string; password: string }) =>
     api.post('/auth/login', credentials),
-  register: (userData: { email: string; password: string; username: string }) =>
-    api.post('/auth/register', userData),
+  register: (userData: { 
+    email: string; 
+    password: string; 
+    username: string;
+    fechaNacimiento: string;
+  }) => api.post('/auth/register', userData),
 };
 
 // Dashboard endpoints

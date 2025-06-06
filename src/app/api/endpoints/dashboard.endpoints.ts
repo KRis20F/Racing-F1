@@ -1,7 +1,6 @@
 import { api } from '../api.config';
 import type { UserStats, TokenHistory, GlobalStats, MarketOverview, WalletInfo } from '../../types/api/dashboard.types';
 import type { UserData } from '../../types/api/auth.types';
-import { storage } from '../../utils/storage';
 
 // Endpoints
 export const dashboardEndpoints = {
@@ -19,7 +18,7 @@ export const dashboardEndpoints = {
 
   // Historial de precios del token
   getTokenHistory: async (): Promise<TokenHistory[]> => {
-    const response = await api.get<TokenHistory[]>('/api/dashboard/token/history');
+    const response = await api.get<TokenHistory[]>('/api/dashboard/token/price-history');
     return response.data;
   },
 

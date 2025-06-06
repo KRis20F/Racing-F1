@@ -1,16 +1,18 @@
 import { Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, BarChart, Area, AreaChart } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { dashboardEndpoints } from '../../api/endpoints/dashboard.endpoints';
 import type { UserStats, GlobalStats, TokenHistory } from '../../types/api/dashboard.types';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import { WalletDialog } from '../../UI/WalletDialog';
 import { DashboardSkeleton } from '../../UI/Skeleton/DashboardSkeletons';
 import { useUserData } from '../../hooks/useUserData';
-import type { Car } from '../../types/api/auth.types';
 import Sidebar from '../../UI/Sidebar';
 import { StatCard } from './components/StatCard';
-
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Html } from '@react-three/drei';
+import { CarModel } from '../../UI/CarModel';
 
 export const Dashboard = () => {
   const location = useLocation();
@@ -73,14 +75,14 @@ export const Dashboard = () => {
       return <DashboardSkeleton />;
     }
 
-    return (
+  return (
       <>
         <WalletDialog 
           isOpen={showWalletDialog} 
           onClose={handleCloseDialog}
         />
 
-        {/* Top Navigation Bar */}
+          {/* Top Navigation Bar */}
         <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2 text-white/80">
             <span>Páginas</span>
@@ -233,25 +235,103 @@ export const Dashboard = () => {
                 <h2 className="text-xl font-bold text-white">Colección de Autos</h2>
                 <p className="text-gray-400 text-sm">Tus vehículos de carreras</p>
                 </div>
-                <button className="bg-[#4318FF] text-white px-4 py-2 rounded-lg hover:bg-[#3311CC] transition-colors">
+                <Link to="/garage" className="bg-[#4318FF] text-white px-4 py-2 rounded-lg hover:bg-[#3311CC] transition-colors">
                 Ver Todos
-                </button>
+                </Link>
               </div>
-              <div className="grid grid-cols-1 gap-4">
-              {profile?.cars?.map((car: Car, index: number) => (
-                  <div key={index} className="bg-[#1B254B] rounded-xl p-4 flex justify-between items-center">
-                    <div>
-                    <p className="text-white font-medium">{car.name}</p>
-                    <p className="text-gray-400 text-sm">Auto de Carreras</p>
-                    </div>
-                    <div className="text-[#4318FF]">
-                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
+              {profile?.cars && profile.cars.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6">
+                  {/* 3D Model Viewer */}
+                  <div className="h-[300px] bg-[#1B254B] rounded-xl overflow-hidden">
+                    <ErrorBoundary
+                      fallback={
+                        <div className="flex items-center justify-center h-full text-red-500">
+                          Error al cargar el modelo 3D
+                        </div>
+                      }
+                    >
+                      <Canvas
+                        camera={{ position: [3, 2, 5], fov: 50 }}
+                        shadows
+                        gl={{ antialias: true }}
+                      >
+                        <Suspense fallback={
+                          <Html center>
+                            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500"></div>
+                          </Html>
+                        }>
+                          {profile.cars[0]?.modelPath ? (
+                            <CarModel 
+                              modelPath={profile.cars[0].modelPath}
+                              scale={2}
+                              position={[0, -0.5, 0]}
+                            />
+                          ) : (
+                            <Html center>
+                              <div className="text-red-500">
+                                Error: Modelo no disponible
+                              </div>
+                            </Html>
+                          )}
+                          <OrbitControls
+                            enableZoom={true}
+                            enablePan={false}
+                            enableRotate={true}
+                            autoRotate={true}
+                            autoRotateSpeed={2}
+                          />
+                        </Suspense>
+                      </Canvas>
+                    </ErrorBoundary>
                   </div>
-                ))}
+
+                  {/* Car Details */}
+                  <div className="bg-[#1B254B] rounded-xl p-4">
+                    <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className="text-white font-bold text-lg">{profile.cars[0].name}</h3>
+                        <p className="text-gray-400">{profile.cars[0].category}</p>
+                    </div>
+                      <div className="bg-[#4318FF]/10 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#4318FF]" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                          <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                      </svg>
+                      </div>
+                    </div>
+                    {profile.cars[0]?.specs && (
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Potencia</p>
+                          <p className="text-white">{profile.cars[0].specs.power}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Aceleración</p>
+                          <p className="text-white">{profile.cars[0].specs.acceleration}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Velocidad Máxima</p>
+                          <p className="text-white">{profile.cars[0].specs.topSpeed}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Peso</p>
+                          <p className="text-white">{profile.cars[0].specs.weight}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-400">No tienes autos en tu colección</p>
+                  <Link 
+                    to="/shop" 
+                    className="mt-4 inline-block bg-[#4318FF] text-white px-6 py-2 rounded-lg hover:bg-[#3311CC] transition-colors"
+                  >
+                    Ir a la tienda
+                  </Link>
               </div>
+              )}
             </div>
           </div>
 

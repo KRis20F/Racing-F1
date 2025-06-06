@@ -15,6 +15,7 @@ import Shop from "../features/shop/Shop";
 import Billing from "../features/userDashboard/components/Billing/Index";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Home from "../features/home/Home";
+import { Garage } from "../features/userDashboard/components/Garage";
 
 const LandingPage = () => {
   return (
@@ -53,6 +54,7 @@ const Routes = () => {
         <Route index element={<div />} />
         <Route path="billing" element={<Billing />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="garage" element={<Garage />} />
       </Route>
 
       {/* Protected routes with navbar */}
@@ -60,9 +62,7 @@ const Routes = () => {
         <Route
           path="shop"
           element={
-            
               <Shop />
-            
           }
         />
         <Route

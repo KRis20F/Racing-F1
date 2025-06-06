@@ -8,6 +8,28 @@ export interface RegisterData extends LoginCredentials {
   fechaNacimiento: string;
 }
 
+export interface Car {
+  id: string;
+  name: string;
+  description: string;
+  modelPath: string;
+  category: string;
+  specs: {
+    power: string;
+    acceleration: string;
+    topSpeed: string;
+    weight: string;
+  };
+  scale: number;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  cameraPosition: [number, number, number];
+  fov: number;
+  preview_image?: string;
+  thumbnail_image?: string;
+  price?: number;
+}
+
 export interface UserProfile {
   id: number;
   username: string;
@@ -19,6 +41,7 @@ export interface UserProfile {
   experience: number;
   badges: string[];
   fechaNacimiento: string;
+  cars: Car[];
 }
 
 export interface GameData {
@@ -40,7 +63,6 @@ export interface UserData {
   profile: UserProfile;
   game: GameData;
   finances: FinanceData;
-  cars: Car[];
 }
 
 export interface AuthResponse {
@@ -67,16 +89,4 @@ export interface Transaction {
   currency: string;
   timestamp: string;
   status: 'pending' | 'completed' | 'failed';
-}
-
-export interface Car {
-  id: string;
-  name: string;
-  category: string;
-  specs?: {
-    power: string;
-    acceleration: string;
-    topSpeed: string;
-    weight: string;
-  };
 } 

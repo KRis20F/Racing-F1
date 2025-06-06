@@ -10,7 +10,7 @@ export interface CarModel {
   cameraPosition: [number, number, number];
   fov: number;
   category: string;
-  specs: {
+  stats: {
     power: string;
     acceleration: string;
     topSpeed: string;
