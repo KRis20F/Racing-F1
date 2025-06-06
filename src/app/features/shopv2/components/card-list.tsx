@@ -1,14 +1,15 @@
-import { type Car } from '../../../api/endpoints/cars.endpoints';
+import { useContext } from 'react';
 import { CarCard } from './CarCard';
+import { ShopContext } from '../services/shop.context';
 
 export interface CarListProps {
-    carList: Car[];
     loading: boolean;
 }
 
 
-export function CardList({ carList, loading }: CarListProps) {
+export function CardList({ loading }: CarListProps) {
 
+    const { cars } = useContext(ShopContext);
 
     return (<div className='flex gap-1'>
         {
@@ -16,7 +17,7 @@ export function CardList({ carList, loading }: CarListProps) {
                 <p>Loading...</p>
 
             ) : (
-                carList.map((car) => (
+                cars.map((car) => (
                     <CarCard key={car.id} car={car}/>
                 ))
             )

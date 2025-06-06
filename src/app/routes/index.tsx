@@ -16,6 +16,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import Home from "../features/home/Home";
 import { ShopPage } from "../features/shopv2/ShopV2";
 import Garage from "../features/userDashboard/components/Garage";
+import { ShopContextProvider } from "../features/shopv2/services/shop.context";
 
 const LandingPage = () => {
   return (
@@ -41,10 +42,10 @@ const Routes = () => {
 
       {/* Auth route */}
       <Route path="/auth" element={<AuthContainer />} />
-      
+
       {/* Dashboard routes (protegidas) */}
-      <Route 
-        path="/dashboard" 
+      <Route
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
@@ -62,7 +63,9 @@ const Routes = () => {
         <Route
           path="shop"
           element={
+            <ShopContextProvider>
               <ShopPage />
+            </ShopContextProvider>
           }
         />
         <Route
