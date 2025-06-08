@@ -3,9 +3,10 @@ import { Canvas } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Html } from "@react-three/drei";
 import { ErrorBoundary } from "react-error-boundary";
 import type { GroupProps } from '@react-three/fiber';
+import * as THREE from 'three';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-const MODEL_URL = `${API_URL}/api/cars/model/2011_mosler_super_gt`;
+const MODEL_PATH = '2011_mosler_super_gt';
 
 // Loading component using Html from drei
 function LoadingMessage() {
@@ -33,13 +34,33 @@ function ErrorMessage() {
 
 // Componente para el modelo 3D
 function Model(props: GroupProps) {
-  console.log('Attempting to load model from:', MODEL_URL);
+  const fullModelPath = `${API_URL}/models3d/${MODEL_PATH}.glb`;
+  console.log('Attempting to load model from:', fullModelPath);
   
   try {
-    const { scene } = useGLTF(MODEL_URL);
+    const { scene } = useGLTF(fullModelPath);
     const scale = 120.0;
     const position: [number, number, number] = [0, -1, 0];
     const rotation: [number, number, number] = [0, Math.PI / 3, 0];
+    
+    // Optimizar geometrías y materiales
+    scene.traverse((node: THREE.Object3D) => {
+      if (node instanceof THREE.Mesh) {
+        if (node.geometry) {
+          node.geometry.computeBoundingSphere();
+          node.geometry.computeBoundingBox();
+        }
+        if (node.material) {
+          if (Array.isArray(node.material)) {
+            node.material.forEach(mat => {
+              mat.needsUpdate = false;
+            });
+          } else {
+            node.material.needsUpdate = false;
+          }
+        }
+      }
+    });
     
     return (
       <primitive 
@@ -48,6 +69,7 @@ function Model(props: GroupProps) {
         position={position}
         rotation={rotation}
         {...props} 
+        dispose={null}
       />
     );
   } catch (error) {

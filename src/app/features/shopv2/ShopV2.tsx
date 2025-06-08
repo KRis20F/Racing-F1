@@ -1,18 +1,28 @@
-import { useAllCars } from "@/app/hooks/useCars";
+import { useQuery } from '@tanstack/react-query';
+import { marketplaceEndpoints } from '@/app/api/endpoints/marketplace.endpoints';
 import { CardList } from './components/card-list';
 import { ShopContextProvider } from "./services/shop.context";
 
 export function ShopPage() {
-
-    const { data: cars = [], isLoading: loading } = useAllCars();
-
-    console.log(cars);
+    const { data: cars = [], isLoading: loading } = useQuery({
+        queryKey: ['marketplace'],
+        queryFn: marketplaceEndpoints.getListings
+    });
 
     return (
-        <main className="mt-[300px]">
-            <ShopContextProvider>
-                <CardList carList={cars} loading={loading}/>
-            </ShopContextProvider>
+        <main className="min-h-screen bg-[#0B1437] p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Breadcrumb */}
+                <div className="flex items-center gap-2 text-white/80 mb-6">
+                    <span>Páginas</span>
+                    <span>/</span>
+                    <span>Tienda</span>
+                </div>
+
+                <ShopContextProvider>
+                    <CardList carList={cars} loading={loading}/>
+                </ShopContextProvider>
+            </div>
         </main>
-    )
+    );
 }

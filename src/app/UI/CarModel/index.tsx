@@ -1,6 +1,5 @@
-import { useRef } from 'react';
-import { useGLTF } from '@react-three/drei';
-import { Html } from '@react-three/drei';
+import { useRef, Suspense } from 'react';
+import { useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -12,39 +11,54 @@ interface CarModelProps {
   rotation?: [number, number, number];
 }
 
+// Loading component using Html from drei
+function LoadingMessage() {
+  return (
+    <Html center>
+      <div className="flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500"></div>
+      </div>
+    </Html>
+  );
+}
+
+// Error component using Html from drei
+function ErrorMessage() {
+  return (
+    <Html center>
+      <div className="text-red-500 text-center">
+        <p className="text-xl font-bold mb-2">Error al cargar el modelo 3D</p>
+        <p className="text-sm mb-2">El servidor no está respondiendo</p>
+        <p className="text-xs text-gray-500">Asegúrate de que el servidor backend esté corriendo en {API_URL}</p>
+      </div>
+    </Html>
+  );
+}
+
 export function CarModel({ 
   modelPath,
-  scale = 80,
-  position = [0, -1, 0],
-  rotation = [0, Math.PI / 3, 0]
+  scale = 180.0,
+  position = [0, -0.35, 0],
+  rotation = [0, Math.PI / 4, 0]
 }: CarModelProps) {
   const group = useRef<THREE.Group>(null);
   
   // Asegurarnos de que la ruta del modelo es correcta
   const fullModelPath = modelPath.startsWith('http') 
     ? modelPath 
-    : `${API_URL}/models3d/${modelPath.split('/').pop()?.replace('.glb', '')}.glb`;
+    : modelPath.startsWith('/') 
+      ? `${API_URL}${modelPath}`
+      : `${API_URL}/models3d/${modelPath}`;
 
   console.log('Loading model from:', fullModelPath);
   
-  // Cargar el modelo
+  // Cargar el modelo (hooks deben estar en el nivel superior)
   const { scene } = useGLTF(fullModelPath);
 
+  // Si no hay escena, mostrar error
   if (!scene) {
-    return (
-      <Html center>
-        <div className="text-red-500">
-          Error: Modelo no disponible
-        </div>
-      </Html>
-    );
-  }
-
-  // Configurar el modelo
-  if (group.current) {
-    group.current.scale.setScalar(scale);
-    group.current.position.set(...position);
-    group.current.rotation.set(...rotation);
+    console.error('No scene loaded');
+    return <ErrorMessage />;
   }
 
   // Optimizar geometrías y materiales
@@ -57,21 +71,26 @@ export function CarModel({
       if (node.material) {
         if (Array.isArray(node.material)) {
           node.material.forEach(mat => {
-            mat.needsUpdate = false;
+            mat.needsUpdate = true;
           });
         } else {
-          node.material.needsUpdate = false;
+          node.material.needsUpdate = true;
         }
       }
     }
   });
 
   return (
-    <primitive 
-      object={scene} 
-      ref={group}
-      dispose={null}
-    />
+    <Suspense fallback={<LoadingMessage />}>
+      <primitive 
+        object={scene} 
+        ref={group}
+        scale={scale}
+        position={position}
+        rotation={rotation}
+        dispose={null}
+      />
+    </Suspense>
   );
 }
 

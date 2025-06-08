@@ -53,7 +53,7 @@ export interface GameData {
 }
 
 export interface FinanceData {
-  balance: string;
+  usdBalance: string;
   wallet: string;
   tokenBalance: string;
   recentTransactions?: Transaction[];

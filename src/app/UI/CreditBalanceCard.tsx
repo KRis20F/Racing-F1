@@ -57,7 +57,10 @@ const CreditBalanceCard: FC<CreditBalanceCardProps> = ({
             <div>
               <h3 className="text-white text-lg mb-1">Balance de Crédito</h3>
               <div className="text-[32px] font-bold text-white">
-                ${Number(balance).toLocaleString()}
+                ${(Number(balance) * 13).toLocaleString()}
+              </div>
+              <div className="text-sm text-gray-400">
+                {Number(balance).toLocaleString()} RCT
               </div>
             </div>
             <div className="flex items-center gap-4">

@@ -1,9 +1,14 @@
 import BettingPanel from "./components/BettingPanel";
 import Leaderboard from "./components/Leaderboard";
-import RaceTrack from "./components/RaceTrack";
 import { useEffect, useState } from "react";
 import { useRace } from "../../hooks/useRace";
 import { toast } from "react-hot-toast";
+import type { BetRequest } from "../../api/endpoints/race.endpoints";
+
+interface SimpleBetData {
+  playerId: number;
+  amount: number;
+}
 
 const Game = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,8 +18,6 @@ const Game = () => {
     createBet,
     isCreatingBet,
     createBetError,
-    submitRaceResult,
-    isSubmittingResult,
     submitResultError
   } = useRace();
 
@@ -36,24 +39,21 @@ const Game = () => {
     }
   }, [createBetError, submitResultError]);
 
-  const handleBetSubmit = async (betData: any) => {
+  const handleBetSubmit = async (betData: SimpleBetData) => {
     try {
       setIsBetting(true);
-      await createBet(betData);
+      const fullBetData: BetRequest = {
+        raceId: 1, // TODO: Get actual race ID
+        amount: betData.amount.toString(),
+        carId: 1, // TODO: Get selected car ID
+        position: 1 // TODO: Get predicted position
+      };
+      await createBet(fullBetData);
       toast.success('¡Apuesta realizada con éxito!');
     } catch (error) {
       console.error('Error al procesar la apuesta:', error);
     } finally {
       setIsBetting(false);
-    }
-  };
-
-  const handleRaceComplete = async (resultData: any) => {
-    try {
-      await submitRaceResult(resultData);
-      toast.success('¡Resultado enviado con éxito!');
-    } catch (error) {
-      console.error('Error al enviar resultado:', error);
     }
   };
 
@@ -81,14 +81,20 @@ const Game = () => {
 
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Race Track */}
+          {/* Game Window */}
           <div className="lg:col-span-2">
-            <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
-              <RaceTrack 
-                isBetting={isBetting} 
-                onRaceComplete={handleRaceComplete}
-                isSubmittingResult={isSubmittingResult}
-              />
+            <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+              <div className="w-full h-[700px] relative">
+                <iframe 
+                  src="https://itch.io/embed-upload/9812011?color=333333" 
+                  allowFullScreen 
+                  width="100%" 
+                  height="100%"
+                  frameBorder="0"
+                  className="absolute top-0 left-0 w-full h-full"
+                  title="RacingFi - Multiplayer Online Racing Game"
+                ></iframe>
+              </div>
             </div>
           </div>
 

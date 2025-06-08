@@ -18,6 +18,7 @@ export const Dashboard = () => {
   const location = useLocation();
   const isDashboardRoot = location.pathname === '/dashboard';
   const [showWalletDialog, setShowWalletDialog] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<number | null>(null);
 
   const { data: userStats, isLoading: isLoadingStats } = useQuery<UserStats>({
     queryKey: ['userStats'],
@@ -241,8 +242,34 @@ export const Dashboard = () => {
               </div>
               {profile?.cars && profile.cars.length > 0 ? (
                 <div>
+                  {/* Car Info */}
+                  <div className="mb-2 flex justify-between items-center">
+                    <div>
+                      <h3 className="text-white text-lg font-semibold">{profile.cars[selectedCar || 0]?.name}</h3>
+                      <p className="text-gray-400">{profile.cars[selectedCar || 0]?.category}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setSelectedCar(prev => (prev === 0 ? profile.cars.length - 1 : prev! - 1))}
+                        className="p-2 rounded-full bg-[#1B254B] hover:bg-[#4318FF] transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button 
+                        onClick={() => setSelectedCar(prev => (prev === profile.cars.length - 1 ? 0 : prev! + 1))}
+                        className="p-2 rounded-full bg-[#1B254B] hover:bg-[#4318FF] transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
                   {/* 3D Model Viewer */}
-                  <div className="h-[400px] bg-[#1B254B] rounded-xl overflow-hidden">
+                  <div className="h-[280px] bg-[#1B254B] rounded-xl overflow-hidden">
                     <ErrorBoundary
                       fallback={
                         <div className="flex items-center justify-center h-full text-red-500">
@@ -251,54 +278,56 @@ export const Dashboard = () => {
                       }
                     >
                       <Canvas
-                        camera={{ position: [4, 2, 5], fov: 45 }}
-                        gl={{ 
-                          preserveDrawingBuffer: true,
-                          antialias: true 
-                        }}
+                        camera={{ position: [2.5, 1.5, 2.5], fov: 50 }}
+                        gl={{ preserveDrawingBuffer: true, antialias: true }}
                         dpr={[1, 2]}
-                        frameloop="demand"
                       >
                         <color attach="background" args={['#1B254B']} />
                         <Suspense fallback={
                           <Html center>
-                            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
                           </Html>
                         }>
                           <group>
-                            {profile.cars[0]?.modelPath ? (
+                            {profile.cars[selectedCar || 0]?.modelPath && (
                               <CarModel 
-                                modelPath={profile.cars[0].modelPath}
-                                scale={80}
-                                position={[0, -1, 0]}
+                                modelPath={profile.cars[selectedCar || 0].modelPath}
+                                scale={100}
+                                position={[0, -0.35, 0]}
                               />
-                            ) : (
-                              <Html center>
-                                <div className="text-red-500">
-                                  Error: Modelo no disponible
-                                </div>
-                              </Html>
                             )}
-                            <ambientLight intensity={0.7} />
+                            <ambientLight intensity={1} />
                             <spotLight
                               position={[10, 10, 10]}
                               angle={0.15}
                               penumbra={1}
-                              intensity={1}
+                              intensity={1.5}
                             />
-                            <pointLight position={[-10, -10, -10]} intensity={0.5} />
+                            <pointLight position={[-10, -10, -10]} intensity={0.8} />
                           </group>
                           <OrbitControls
-                            makeDefault
                             enableZoom={false}
                             maxPolarAngle={Math.PI / 2}
                             minPolarAngle={Math.PI / 4}
                             autoRotate={true}
-                            autoRotateSpeed={1}
+                            autoRotateSpeed={2}
                           />
                         </Suspense>
                       </Canvas>
                     </ErrorBoundary>
+                  </div>
+
+                  {/* Navigation Dots */}
+                  <div className="flex justify-center gap-2 mt-2">
+                    {profile.cars.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedCar(index)}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                          index === selectedCar ? 'bg-[#4318FF]' : 'bg-[#1B254B]'
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
               ) : (
@@ -349,24 +378,7 @@ export const Dashboard = () => {
             </div>
           </div>
 
-        {/* Wallet Overview */}
-        <div className="bg-[#111C44] rounded-[20px] p-6">
-          <h2 className="text-xl font-bold text-white mb-6">Resumen de Billetera</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[#1B254B] rounded-xl p-4">
-              <p className="text-gray-400 text-sm">Balance USD</p>
-              <p className="text-2xl font-bold text-white">${finances?.balance?.toLocaleString() || '0.00'}</p>
-              </div>
-              <div className="bg-[#1B254B] rounded-xl p-4">
-              <p className="text-gray-400 text-sm">Balance RCT</p>
-              <p className="text-2xl font-bold text-[#4318FF]">{finances?.tokenBalance || '0.000'} RCT</p>
-              </div>
-              <div className="bg-[#1B254B] rounded-xl p-4">
-              <p className="text-gray-400 text-sm">Dirección de Billetera</p>
-              <p className="text-sm text-white font-mono truncate">{publicKey || '0x0000...0000'}</p>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

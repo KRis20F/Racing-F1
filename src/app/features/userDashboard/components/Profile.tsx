@@ -13,6 +13,13 @@ export const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#0B1437] p-8">
+      {/* Breadcrumb Navigation */}
+      <div className="flex items-center gap-2 text-white/80 mb-4">
+        <span>Páginas</span>
+        <span>/</span>
+        <span>Perfil</span>
+      </div>
+
       {/* Header with glowing effect */}
       <div className="relative mb-12">
         <h1 className="text-4xl font-bold text-white relative z-10">

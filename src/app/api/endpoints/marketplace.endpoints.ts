@@ -1,27 +1,38 @@
 import { api } from '../api.config';
 
-export interface CarStats {
-  speed: number;
-  handling: number;
-  acceleration: number;
+export interface CarSpecs {
+  power: string;
+  weight: string;
+  topSpeed: string;
+  acceleration: string;
 }
 
-export interface MarketplaceListing {
+export interface MarketplaceCar {
   id: number;
-  carId: number;
   name: string;
-  price: string;
-  seller: string;
-  stats: CarStats;
+  category: string;
+  current_price: string;
+  price: number;
+  description: string;
+  market_status: 'available' | 'sold' | 'pending';
+  model_path: string;
+  preview_image: string;
+  thumbnail_image: string;
+  seller_id: number | null;
+  specs: CarSpecs;
 }
 
 export interface ListingsResponse {
-  listings: MarketplaceListing[];
+  listings: MarketplaceCar[];
+}
+
+export interface BuyRequest {
+  listingId: number;
 }
 
 export interface SellRequest {
   carId: number;
-  price: string;
+  price: number;
 }
 
 export interface SellResponse {
@@ -30,11 +41,6 @@ export interface SellResponse {
   price: string;
   status: 'LISTED' | 'SOLD' | 'CANCELLED';
   timestamp: string;
-}
-
-export interface BuyRequest {
-  listingId: number;
-  buyerId: number;
 }
 
 export interface BuyResponse {
@@ -48,18 +54,18 @@ export interface BuyResponse {
 }
 
 export const marketplaceEndpoints = {
-  getListings: async (): Promise<ListingsResponse> => {
-    const response = await api.get<ListingsResponse>('/api/marketplace/listings');
+  getListings: async (): Promise<MarketplaceCar[]> => {
+    const response = await api.get<MarketplaceCar[]>('/api/marketplace/listings');
     return response.data;
   },
 
-  sellCar: async (data: SellRequest): Promise<SellResponse> => {
-    const response = await api.post<SellResponse>('/api/marketplace/sell', data);
+  buyCar: async (data: BuyRequest) => {
+    const response = await api.post('/api/marketplace/buy', data);
     return response.data;
   },
 
-  buyCar: async (data: BuyRequest): Promise<BuyResponse> => {
-    const response = await api.post<BuyResponse>('/api/marketplace/buy', data);
+  sellCar: async (data: SellRequest) => {
+    const response = await api.post('/api/marketplace/sell', data);
     return response.data;
   }
 }; 

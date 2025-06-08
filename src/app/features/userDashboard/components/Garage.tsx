@@ -1,46 +1,43 @@
 import { useState, Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stage, useProgress } from '@react-three/drei';
+import { OrbitControls, Html, PerspectiveCamera } from '@react-three/drei';
 import { useUserData } from '../../../hooks/useUserData';
 import { CarModel } from '../../../UI/CarModel';
-import { carsEndpoints } from '../../../api/endpoints/cars.endpoints';
-import type { CarListing } from '../../../api/endpoints/cars.endpoints';
+import type { Car } from '../../../types/api/auth.types';
 
-const LoadingScreen = () => {
-  const { progress } = useProgress();
-  return (
-    <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-50">
-      <div className="text-center">
-        <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-indigo-400 text-lg">Loading Models... {progress.toFixed(0)}%</p>
+const LoadingScreen = () => (
+  <Html center>
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="text-indigo-400 text-lg">Loading Model...</p>
+    </div>
+  </Html>
+);
+
+const ErrorScreen = ({ message }: { message: string }) => (
+  <Html center>
+    <div className="text-center">
+      <div className="text-red-500 bg-black/50 p-4 rounded-lg">
+        {message}
       </div>
     </div>
-  );
-};
+  </Html>
+);
 
 export const Garage = () => {
   const { profile, isLoading: isProfileLoading } = useUserData();
-  const [selectedCar, setSelectedCar] = useState<CarListing | null>(null);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [carListings, setCarListings] = useState<CarListing[]>([]);
-  const [isLoadingModels, setIsLoadingModels] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Set first car as selected when profile loads
   useEffect(() => {
-    const loadCarListings = async () => {
-      try {
-        const { listings } = await carsEndpoints.getCarListings();
-        setCarListings(listings);
-        setIsLoadingModels(false);
-      } catch (error) {
-        console.error('Error loading car listings:', error);
-        setIsLoadingModels(false);
-      }
-    };
+    if (profile?.cars && profile.cars.length > 0 && !selectedCar) {
+      setSelectedCar(profile.cars[0]);
+    }
+  }, [profile?.cars, selectedCar]);
 
-    loadCarListings();
-  }, []);
-
-  if (isProfileLoading || isLoadingModels) {
+  if (isProfileLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#0B1437]">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#4318FF]"></div>
@@ -49,26 +46,22 @@ export const Garage = () => {
   }
 
   const userCars = profile?.cars || [];
-  const userCarListings = carListings.filter(listing => 
-    userCars.some(userCar => userCar.id === listing.carId)
-  );
 
   return (
     <div className="min-h-screen bg-[#0B1437] p-8">
-      {/* Header */}
-      <div className="relative mb-12">
-        <h1 className="text-4xl font-bold text-white relative z-10">
-          Virtual Garage
-          <span className="absolute -bottom-2 left-0 w-24 h-1 bg-gradient-to-r from-[#4318FF] to-purple-600"></span>
-        </h1>
-        <p className="text-gray-400 mt-4">Your collection of racing machines</p>
+      {/* Breadcrumb Navigation */}
+      <div className="flex items-center gap-2 text-white/80 mb-4">
+        <span>Páginas</span>
+        <span>/</span>
+        <span>Garage</span>
       </div>
 
+      
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Car List */}
         <div className="lg:col-span-1 space-y-4">
-          {userCarListings.map((car) => (
+          {userCars.map((car) => (
             <div
               key={car.id}
               className={`bg-[#111C44] rounded-xl p-4 cursor-pointer transition-all duration-300 ${
@@ -83,7 +76,7 @@ export const Garage = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-white font-bold">{car.name}</h3>
-                  <p className="text-gray-400 text-sm">{car.modelType}</p>
+                  <p className="text-gray-400 text-sm">{car.category}</p>
                 </div>
                 <div className="w-8 h-8 rounded-lg bg-[#4318FF]/10 flex items-center justify-center">
                   <svg
@@ -100,7 +93,7 @@ export const Garage = () => {
             </div>
           ))}
 
-          {userCarListings.length === 0 && (
+          {userCars.length === 0 && (
             <div className="text-center py-8 bg-[#111C44] rounded-xl">
               <p className="text-gray-400">No cars in your collection yet</p>
               <a 
@@ -115,37 +108,50 @@ export const Garage = () => {
 
         {/* 3D Viewer */}
         <div className="lg:col-span-2">
-          <div className="bg-[#111C44] rounded-2xl overflow-hidden" style={{ height: '600px' }}>
+          <div className="bg-[#111C44] rounded-2xl overflow-hidden" style={{ height: '400px' }}>
             {selectedCar ? (
               <Canvas
                 shadows
                 dpr={[1, 2]}
-                camera={{ position: [4, 2, 5], fov: 50 }}
+                gl={{ 
+                  antialias: true,
+                  preserveDrawingBuffer: true,
+                  powerPreference: "high-performance"
+                }}
+                onError={(e) => setError(e instanceof Error ? e.message : 'Failed to load 3D model')}
               >
+                <color attach="background" args={['#111C44']} />
+                <PerspectiveCamera makeDefault position={[4, 2, 5]} fov={50} />
+                <ambientLight intensity={0.8} />
+                <spotLight
+                  position={[10, 10, 10]}
+                  angle={0.15}
+                  penumbra={1}
+                  intensity={1}
+                  castShadow
+                />
                 <Suspense fallback={<LoadingScreen />}>
-                  <Stage
-                    environment="city"
-                    intensity={0.6}
-                    shadows
-                    preset="rembrandt"
-                  >
+                  {error ? (
+                    <ErrorScreen message={error} />
+                  ) : (
                     <CarModel 
-                      modelPath={selectedCar.modelPath.replace('.glb', '')}
-                      scale={2}
-                      position={[0, -0.5, 0]}
+                      modelPath={selectedCar.modelPath}
+                      scale={130}
+                      position={[0, -0.35, 0]}
+                      rotation={[0, Math.PI / 4, 0]}
                     />
-                  </Stage>
-                  <OrbitControls
-                    enableZoom={true}
-                    enablePan={false}
-                    enableRotate={true}
-                    autoRotate={isHovered}
-                    autoRotateSpeed={4}
-                    makeDefault
-                    minPolarAngle={Math.PI / 4}
-                    maxPolarAngle={Math.PI / 2}
-                  />
+                  )}
                 </Suspense>
+                <OrbitControls
+                  enableZoom={false}
+                  enablePan={false}
+                  enableRotate={true}
+                  autoRotate={isHovered}
+                  autoRotateSpeed={4}
+                  makeDefault
+                  minPolarAngle={Math.PI / 4}
+                  maxPolarAngle={Math.PI / 2}
+                />
               </Canvas>
             ) : (
               <div className="h-full flex items-center justify-center">
@@ -159,23 +165,23 @@ export const Garage = () => {
             <div className="mt-6 bg-[#111C44] rounded-xl p-6">
               <h2 className="text-2xl font-bold text-white mb-4">{selectedCar.name}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {selectedCar.stats && (
+                {selectedCar.specs && (
                   <>
                     <div className="bg-[#1B254B] rounded-xl p-4">
                       <p className="text-gray-400 text-sm">Power</p>
-                      <p className="text-white font-bold">{selectedCar.stats.power}</p>
-                    </div>
-                    <div className="bg-[#1B254B] rounded-xl p-4">
-                      <p className="text-gray-400 text-sm">Acceleration</p>
-                      <p className="text-white font-bold">{selectedCar.stats.acceleration}</p>
+                      <p className="text-white font-bold">{selectedCar.specs.power}</p>
                     </div>
                     <div className="bg-[#1B254B] rounded-xl p-4">
                       <p className="text-gray-400 text-sm">Top Speed</p>
-                      <p className="text-white font-bold">{selectedCar.stats.topSpeed}</p>
+                      <p className="text-white font-bold">{selectedCar.specs.topSpeed}</p>
+                    </div>
+                    <div className="bg-[#1B254B] rounded-xl p-4">
+                      <p className="text-gray-400 text-sm">Acceleration</p>
+                      <p className="text-white font-bold">{selectedCar.specs.acceleration}</p>
                     </div>
                     <div className="bg-[#1B254B] rounded-xl p-4">
                       <p className="text-gray-400 text-sm">Weight</p>
-                      <p className="text-white font-bold">{selectedCar.stats.weight}</p>
+                      <p className="text-white font-bold">{selectedCar.specs.weight}</p>
                     </div>
                   </>
                 )}
