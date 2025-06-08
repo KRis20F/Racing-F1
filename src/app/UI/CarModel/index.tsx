@@ -1,5 +1,7 @@
-import { useRef, Suspense } from 'react';
+import { useRef, Suspense, useEffect } from 'react';
 import { useGLTF, Html } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
+import type { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -23,12 +25,12 @@ function LoadingMessage() {
 }
 
 // Error component using Html from drei
-function ErrorMessage() {
+function ErrorMessage({ error }: { error?: string }) {
   return (
     <Html center>
       <div className="text-red-500 text-center">
         <p className="text-xl font-bold mb-2">Error al cargar el modelo 3D</p>
-        <p className="text-sm mb-2">El servidor no está respondiendo</p>
+        <p className="text-sm mb-2">{error || 'El servidor no está respondiendo'}</p>
         <p className="text-xs text-gray-500">Asegúrate de que el servidor backend esté corriendo en {API_URL}</p>
       </div>
     </Html>
@@ -42,56 +44,124 @@ export function CarModel({
   rotation = [0, Math.PI / 4, 0]
 }: CarModelProps) {
   const group = useRef<THREE.Group>(null);
+  const { gl } = useThree();
   
-  // Asegurarnos de que la ruta del modelo es correcta
+  // Handle WebGL context loss
+  useEffect(() => {
+    const canvas = gl.domElement;
+    
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+    };
+
+    const handleContextRestored = () => {
+      if (group.current) {
+        // Force scene update
+        group.current.traverse((node: THREE.Object3D) => {
+          if (node instanceof THREE.Mesh) {
+            if (node.material) {
+              if (Array.isArray(node.material)) {
+                node.material.forEach(mat => mat.needsUpdate = true);
+              } else {
+                node.material.needsUpdate = true;
+              }
+            }
+          }
+        });
+      }
+    };
+
+    canvas.addEventListener('webglcontextlost', handleContextLost);
+    canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+    return () => {
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+    };
+  }, [gl]);
+  
+  // Ensure model path is correct
   const fullModelPath = modelPath.startsWith('http') 
     ? modelPath 
     : modelPath.startsWith('/') 
       ? `${API_URL}${modelPath}`
       : `${API_URL}/models3d/${modelPath}`;
-
-  console.log('Loading model from:', fullModelPath);
   
-  // Cargar el modelo (hooks deben estar en el nivel superior)
-  const { scene } = useGLTF(fullModelPath);
+  // Load the model (hooks must be at the top level)
+  const { scene } = useGLTF(fullModelPath) as GLTF & { errors?: string[] };
 
-  // Si no hay escena, mostrar error
+  // If no scene or errors, show error message
   if (!scene) {
-    console.error('No scene loaded');
-    return <ErrorMessage />;
+    return <ErrorMessage error="Failed to load 3D model" />;
   }
 
-  // Optimizar geometrías y materiales
-  scene.traverse((node) => {
-    if (node instanceof THREE.Mesh) {
-      if (node.geometry) {
-        node.geometry.computeBoundingSphere();
-        node.geometry.computeBoundingBox();
-      }
-      if (node.material) {
-        if (Array.isArray(node.material)) {
-          node.material.forEach(mat => {
-            mat.needsUpdate = true;
-          });
-        } else {
-          node.material.needsUpdate = true;
+  try {
+    // Optimizar geometrías y materiales
+    scene.traverse((node: THREE.Object3D) => {
+      if (node instanceof THREE.Mesh) {
+        // Habilitar sombras
+        node.castShadow = true;
+        node.receiveShadow = true;
+
+        if (node.geometry) {
+          node.geometry.computeBoundingSphere();
+          node.geometry.computeBoundingBox();
+        }
+        
+        if (node.material) {
+          const isMuscleCarModel = modelPath.includes('pontiac') || 
+                                 modelPath.includes('dodge_charger') || 
+                                 modelPath.includes('bmw_m3');
+
+          if (Array.isArray(node.material)) {
+            node.material.forEach(mat => {
+              mat.needsUpdate = true;
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                // Configuración específica para muscle cars
+                if (isMuscleCarModel) {
+                  mat.roughness = 0.6;  // Más brillante
+                  mat.metalness = 0.7;  // Más metálico
+                  mat.envMapIntensity = 2.0;  // Más reflectivo
+                } else {
+                  mat.roughness = 0.8;
+                  mat.metalness = 0.4;
+                  mat.envMapIntensity = 1.5;
+                }
+              }
+            });
+          } else {
+            node.material.needsUpdate = true;
+            if (node.material instanceof THREE.MeshStandardMaterial) {
+              // Configuración específica para muscle cars
+              if (isMuscleCarModel) {
+                node.material.roughness = 0.6;  // Más brillante
+                node.material.metalness = 0.7;  // Más metálico
+                node.material.envMapIntensity = 2.0;  // Más reflectivo
+              } else {
+                node.material.roughness = 0.8;
+                node.material.metalness = 0.4;
+                node.material.envMapIntensity = 1.5;
+              }
+            }
+          }
         }
       }
-    }
-  });
+    });
 
-  return (
-    <Suspense fallback={<LoadingMessage />}>
-      <primitive 
-        object={scene} 
-        ref={group}
-        scale={scale}
-        position={position}
-        rotation={rotation}
-        dispose={null}
-      />
-    </Suspense>
-  );
+    return (
+      <Suspense fallback={<LoadingMessage />}>
+        <primitive 
+          object={scene} 
+          ref={group}
+          scale={scale}
+          position={position}
+          rotation={rotation}
+        />
+      </Suspense>
+    );
+  } catch (error) {
+    return <ErrorMessage error={error instanceof Error ? error.message : 'Error desconocido'} />;
+  }
 }
 
 export default CarModel; 

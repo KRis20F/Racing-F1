@@ -11,13 +11,13 @@ export function CardList({ carList, loading }: CardListProps) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse">
+                    <div key={`skeleton-${i}`} className="animate-pulse">
                         <div className="h-48 bg-[#1B254B] rounded-xl mb-4" />
                         <div className="h-6 bg-[#1B254B] rounded w-3/4 mb-2" />
                         <div className="h-4 bg-[#1B254B] rounded w-1/2 mb-4" />
                         <div className="grid grid-cols-2 gap-2 mb-4">
                             {[1, 2, 3, 4].map((j) => (
-                                <div key={j}>
+                                <div key={`skeleton-${i}-spec-${j}`}>
                                     <div className="h-3 bg-[#1B254B] rounded w-1/2 mb-1" />
                                     <div className="h-4 bg-[#1B254B] rounded w-3/4" />
                                 </div>
@@ -47,9 +47,15 @@ export function CardList({ carList, loading }: CardListProps) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {carList.map((car) => (
-                <CarCard key={car.id} car={car} />
-            ))}
+            {carList.map((car) => {
+                const modelName = car.model_path ? car.model_path.split('/').pop()?.replace('.glb', '') : '';
+                return (
+                    <CarCard 
+                        key={`car-${car.id}-${modelName}`} 
+                        car={car} 
+                    />
+                );
+            })}
         </div>
     );
 }
