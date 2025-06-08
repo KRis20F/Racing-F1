@@ -1,4 +1,4 @@
-import { useRef, Suspense } from "react";
+import { useRef, Suspense, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Html } from "@react-three/drei";
 import { ErrorBoundary } from "react-error-boundary";
@@ -38,7 +38,7 @@ function Model(props: GroupProps) {
   console.log('Attempting to load model from:', fullModelPath);
   
   try {
-    const { scene } = useGLTF(fullModelPath);
+    const { scene } = useGLTF(fullModelPath, true);
     const scale = 120.0;
     const position: [number, number, number] = [0, -1, 0];
     const rotation: [number, number, number] = [0, Math.PI / 3, 0];
@@ -53,10 +53,12 @@ function Model(props: GroupProps) {
         if (node.material) {
           if (Array.isArray(node.material)) {
             node.material.forEach(mat => {
-              mat.needsUpdate = false;
+              if (mat.map) mat.map.anisotropy = 16;
+              mat.needsUpdate = true;
             });
           } else {
-            node.material.needsUpdate = false;
+            if (node.material.map) node.material.map.anisotropy = 16;
+            node.material.needsUpdate = true;
           }
         }
       }
@@ -83,6 +85,7 @@ function ModelWithErrorBoundary(props: GroupProps) {
     <ErrorBoundary 
       fallback={<ErrorMessage />}
       onError={(error) => console.error('Error in 3D model:', error)}
+      onReset={() => window.location.reload()}
     >
       <Model {...props} />
     </ErrorBoundary>
@@ -91,6 +94,17 @@ function ModelWithErrorBoundary(props: GroupProps) {
 
 export default function InfoCars() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [contextLost, setContextLost] = useState(false);
+
+  const handleContextLost = useCallback(() => {
+    console.warn('WebGL context lost');
+    setContextLost(true);
+  }, []);
+
+  const handleContextRestored = useCallback(() => {
+    console.log('WebGL context restored');
+    setContextLost(false);
+  }, []);
 
   return (
     <section ref={sectionRef} className="relative py-24 px-4">
@@ -119,32 +133,50 @@ export default function InfoCars() {
 
           <div className="w-full md:w-7/12 h-[700px]">
             <div className="h-full w-full">
-              <Canvas
-                camera={{ position: [4, 2, 5], fov: 45 }}
-                gl={{
-                  preserveDrawingBuffer: true,
-                  antialias: true,
-                }}
-                dpr={[1, 2]}
-                onError={(error) => console.error('Canvas error:', error)}
-              >
-                <ambientLight intensity={0.7} />
-                <spotLight
-                  position={[10, 10, 10]}
-                  angle={0.15}
-                  penumbra={1}
-                  intensity={1}
-                />
-                <pointLight position={[-10, -10, -10]} intensity={0.5} />
-                <Suspense fallback={<LoadingMessage />}>
-                  <ModelWithErrorBoundary />
-                  <OrbitControls
-                    enableZoom={false}
-                    maxPolarAngle={Math.PI / 2}
-                    minPolarAngle={Math.PI / 4}
+              {contextLost ? (
+                <div className="flex items-center justify-center h-full bg-gray-900 rounded-lg">
+                  <div className="text-center text-white p-4">
+                    <p className="text-xl mb-2">Contexto WebGL perdido</p>
+                    <p className="text-sm">Recargando visualización...</p>
+                    <button 
+                      onClick={() => window.location.reload()}
+                      className="mt-4 px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                    >
+                      Recargar página
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Canvas
+                  camera={{ position: [4, 2, 5], fov: 45 }}
+                  onCreated={({ gl }) => {
+                    const canvas = gl.domElement;
+                    canvas.addEventListener('webglcontextlost', handleContextLost);
+                    canvas.addEventListener('webglcontextrestored', handleContextRestored);
+                  }}
+                  style={{ background: 'transparent' }}
+                >
+                  <ambientLight intensity={0.7} />
+                  <spotLight
+                    position={[10, 10, 10]}
+                    angle={0.15}
+                    penumbra={1}
+                    intensity={1}
+                    castShadow
                   />
-                </Suspense>
-              </Canvas>
+                  <pointLight position={[-10, -10, -10]} intensity={0.5} />
+                  <Suspense fallback={<LoadingMessage />}>
+                    <ModelWithErrorBoundary />
+                    <OrbitControls
+                      enableZoom={false}
+                      maxPolarAngle={Math.PI / 2}
+                      minPolarAngle={Math.PI / 4}
+                      enableDamping
+                      dampingFactor={0.05}
+                    />
+                  </Suspense>
+                </Canvas>
+              )}
             </div>
           </div>
         </div>

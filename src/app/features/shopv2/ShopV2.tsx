@@ -10,7 +10,7 @@ export function ShopPage() {
     });
 
     return (
-        <main className="min-h-screen bg-[#0B1437] p-6">
+        <main className="min-h-screen pt-36 bg-[#0B1437] p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-white/80 mb-6">

@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import "./assets/css/index.css";
 import App from "./app/App";
 import { QueryProvider } from "./app/providers/QueryProvider";
+import { defaultCanvasProps } from "./app/config/three.config";
+import { Canvas } from "@react-three/fiber";
+
+// Configure global Three.js settings
+Object.assign(Canvas, { defaultProps: defaultCanvasProps });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

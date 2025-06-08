@@ -1,4 +1,4 @@
-import React from "react";
+// Removed React import as it's injected by vite.config.ts
 
 interface Trade {
   price: number;

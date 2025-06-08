@@ -1,7 +1,6 @@
-import React from 'react';
-import type { CarListing } from '../../api/endpoints/marketplace.endpoints';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import type { CarListing } from '../../api/endpoints/marketplace.endpoints';
 
 interface CartProps {
   open: boolean;

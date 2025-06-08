@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import TradingChart from "./components/TradingChart";
 import OrderBook from "./components/OrderBook";
 import PlaceOrder from "./components/PlaceOrder";
@@ -28,7 +28,7 @@ export const Exchange: React.FC = () => {
   } = useExchange();
 
   // Handle any errors in the exchange process
-  React.useEffect(() => {
+  useEffect(() => {
     if (exchangeTokenError) {
       toast.error(`Error en el intercambio: ${exchangeTokenError.message}`);
     }
@@ -41,7 +41,7 @@ export const Exchange: React.FC = () => {
   }, [exchangeTokenError, transferTokenError, transferNFTError]);
 
   return (
-    <div className="min-h-screen bg-[#0b1437] text-white p-6">
+    <div className="min-h-screen pt-36 bg-[#0b1437] text-white p-6">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>

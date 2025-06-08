@@ -9,10 +9,14 @@ export interface CreditCard {
 
 export interface Invoice {
   id: string;
-  date: string;
+  invoice_number: string;
   amount: number;
+  currency: string;
+  type: string;
   status: 'paid' | 'pending' | 'failed';
-  pdfUrl?: string;
+  created_at: string;
+  paid_at?: string;
+  pdf_url?: string;
 }
 
 export interface BillingInfo {

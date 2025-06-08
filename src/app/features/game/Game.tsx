@@ -66,7 +66,7 @@ const Game = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+    <div className="min-h-screen bg-gradient-to-r pt-36 from-gray-900 to-gray-800 text-white">
       {/* Racing-themed header */}
       <div className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 shadow-lg">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -86,13 +86,13 @@ const Game = () => {
             <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
               <div className="w-full h-[700px] relative">
                 <iframe 
-                  src="https://itch.io/embed-upload/9812011?color=333333" 
+                  src="https://itch.io/embed-upload/13934810?color=2D1B69"
                   allowFullScreen 
                   width="100%" 
                   height="100%"
                   frameBorder="0"
                   className="absolute top-0 left-0 w-full h-full"
-                  title="RacingFi - Multiplayer Online Racing Game"
+                  title="Play RacingFi"
                 ></iframe>
               </div>
             </div>

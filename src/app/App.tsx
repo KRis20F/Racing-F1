@@ -3,6 +3,9 @@ import { AuthProvider } from './providers/AuthProvider';
 import Routes from './routes';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
+import { WalletProvider } from '@solana/wallet-adapter-react';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { useMemo } from 'react';
 
 // Obtener el base path de Vite y asegurarnos de que no termine en /
 const BASE_PATH = import.meta.env.BASE_URL.endsWith('/') 
@@ -10,6 +13,8 @@ const BASE_PATH = import.meta.env.BASE_URL.endsWith('/')
   : import.meta.env.BASE_URL;
 
 function App() {
+  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
+
   return (
     <>
       <Toaster
@@ -24,9 +29,11 @@ function App() {
       />
       <QueryProvider>
         <BrowserRouter basename={BASE_PATH}>
-          <AuthProvider>
-            <Routes />
-          </AuthProvider>
+          <WalletProvider wallets={wallets} autoConnect>
+            <AuthProvider>
+              <Routes />
+            </AuthProvider>
+          </WalletProvider>
         </BrowserRouter>
       </QueryProvider>
     </>

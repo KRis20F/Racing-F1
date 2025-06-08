@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import { useState } from "react";
 
 // TODO: Implementar diseño de tabla de clasificación
 // - Añadir animaciones de cambios de posición

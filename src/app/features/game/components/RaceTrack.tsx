@@ -1,7 +1,6 @@
-import { useWallet } from "@solana/wallet-adapter-react";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 
 // TODO: Implementar diseño de pista de carreras
 // - Añadir fondo con perspectiva
@@ -22,16 +21,16 @@ interface RaceTrackProps {
   isSubmittingResult: boolean;
 }
 
-const RaceTrack: React.FC<RaceTrackProps> = React.memo(({ 
+const RaceTrack = memo<RaceTrackProps>(({ 
   isBetting, 
   betAmount,
   onRaceComplete,
   isSubmittingResult 
 }) => {
-  const { publicKey } = useWallet();
+
   const [raceStatus, setRaceStatus] = useState<"waiting" | "racing" | "finished">("waiting");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<typeof OrbitControls>(null);
 
   const handleRaceFinish = useCallback(() => {
     setRaceStatus("finished");
@@ -51,7 +50,7 @@ const RaceTrack: React.FC<RaceTrackProps> = React.memo(({
 
     const handleWheel = (e: WheelEvent) => {
       if (controlsRef.current) {
-        controlsRef.current.handleWheel(e);
+        e.preventDefault();
       }
     };
 
@@ -70,7 +69,6 @@ const RaceTrack: React.FC<RaceTrackProps> = React.memo(({
           camera={{ position: [0, 5, 10], fov: 45 }}
         >
           <OrbitControls
-            ref={controlsRef}
             enableZoom={true}
             enablePan={true}
             enableRotate={true}

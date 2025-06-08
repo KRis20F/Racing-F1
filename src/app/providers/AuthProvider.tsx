@@ -1,4 +1,4 @@
-import React, { createContext, useContext, type ReactNode, useEffect, useState } from 'react';
+import { createContext, useContext, type ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../api/mutations/auth.mutations';
 import type { UserData } from '../types/api/auth.types';
@@ -12,26 +12,23 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  isLoading: true,
-  userData: null,
-  logout: () => {},
-});
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const useAuthContext = () => {
+// Separar el hook del contexto
+export function useAuthContext() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
-};
+}
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+// Exportar el componente AuthProvider por separado
+export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -40,8 +37,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const { user: userData, isLoadingUser } = useAuth();
   const queryClient = useQueryClient();
-
-  // Add isLoggingOut state
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Actualizar autenticación cuando cambie el usuario
@@ -54,43 +49,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Verificar autenticación y proteger rutas
   useEffect(() => {
-    // Skip route protection during logout
-    if (isLoggingOut) return;
+    if (isLoggingOut || isLoadingUser) return;
 
-    const protectedPaths = ['/dashboard', '/profile', '/garage', '/cars', '/game', '/exchange'];
-    const isProtectedRoute = protectedPaths.some(path => location.pathname.startsWith(path));
     const isAuthRoute = location.pathname.startsWith('/auth');
+    const token = storage.getToken();
 
-    if (!isAuthenticated && !isLoadingUser && isProtectedRoute) {
-      navigate('/auth?mode=login', { 
+    // Si estamos en una ruta de autenticación y ya estamos autenticados
+    if (isAuthRoute && isAuthenticated && token) {
+      const from = location.state?.from || '/dashboard';
+      navigate(from, { replace: true });
+      return;
+    }
+
+    // Si no estamos en una ruta de autenticación y no estamos autenticados
+    if (!isAuthRoute && !isAuthenticated && !token) {
+      navigate('/auth?mode=login', {
         replace: true,
         state: { from: location.pathname }
       });
-    } else if (isAuthenticated && isAuthRoute) {
-      const from = location.state?.from || '/dashboard';
-      navigate(from, { replace: true });
+      return;
     }
   }, [isAuthenticated, location.pathname, navigate, isLoadingUser, isLoggingOut]);
 
   const handleLogout = async () => {
     try {
-      // 1. Set logout flag
       setIsLoggingOut(true);
-
-      // 2. Clear all React Query state
+      
+      // Limpiar estado de React Query
       await queryClient.cancelQueries();
       queryClient.clear();
       queryClient.removeQueries();
       
-      // 3. Clear React state
+      // Limpiar estado de React
       setIsAuthenticated(false);
 
-      // 4. Clear all storage data
+      // Limpiar almacenamiento
       storage.clearUserData();
       localStorage.clear();
       sessionStorage.clear();
 
-      // 5. Force clear all known keys
+      // Limpiar claves específicas
       const keysToRemove = [
         'user',
         'token',
@@ -105,11 +103,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         sessionStorage.removeItem(key);
       });
 
-      // 6. Force a complete page reload and redirect
+      // Redireccionar y recargar
       window.location.href = '/auth?mode=login';
     } catch (error) {
       console.error('Error during logout:', error);
-      // If all else fails, force a hard reset
       localStorage.clear();
       sessionStorage.clear();
       window.location.href = '/auth?mode=login';
@@ -128,4 +125,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+} 

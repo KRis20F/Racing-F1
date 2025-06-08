@@ -1,21 +1,67 @@
-# Racing F1 - Dossier Técnico
+# Racing F1 - Technical Documentation
 
-## Funcionalidad
+## Overview
 
-Racing F1 es una plataforma web que permite a los usuarios:
-- Registrarse e iniciar sesión.
-- Gestionar su perfil y wallet.
-- Apostar en carreras virtuales de coches.
-- Visualizar estadísticas, rankings y resultados.
-- Realizar pagos y recargas mediante Stripe y Solana.
-- Intercambiar tokens en un exchange integrado.
-- Visualizar facturación, historial y notificaciones.
+Racing F1 is a cutting-edge blockchain gaming platform that combines the thrill of Formula 1 racing with blockchain technology, specifically using Solana for token transactions. The platform offers a unique gaming experience where players can:
 
----
+- Race with virtual cars represented as NFTs
+- Bet on races using the platform's native RCF token
+- Trade cars in a decentralized marketplace
+- Earn rewards through racing achievements
+- Manage their crypto wallet seamlessly
 
-## Diagramas UML y ER
+## Core Features
 
-### Arquitectura Frontend (Mermaid)
+### 1. Racing System
+- Real-time 3D racing using Three.js and React Three Fiber
+- Dynamic race tracks with physics simulation
+- Multiple race modes (Time Trial, PvP, Tournament)
+- Performance-based rewards system
+- Real-time leaderboard updates
+
+### 2. Car System
+#### Available Categories:
+- Formula Cars (High-performance racing vehicles)
+- Sports Cars (Balanced performance and handling)
+- Super Cars (Elite vehicles with top specifications)
+- Muscle Cars (Power-focused classics)
+
+#### Car Specifications:
+- Power (HP)
+- Acceleration (0-60 mph)
+- Top Speed (mph)
+- Weight (lbs)
+- Unique 3D model with customizable views
+- Performance ratings affecting race outcomes
+
+### 3. Blockchain Integration
+#### Solana Integration
+- Native RCF token (SPL Token)
+  - Address: `4MCKxwSEF3M6y9WsLiJtkoKaMtWh7eRhuV1gRUVZMg6w`
+  - Used for betting, trading, and rewards
+- NFT System for Cars
+  - Each car is represented as a unique digital asset
+  - Ownership tracked on Solana testnet
+  - Transferable between users
+
+#### Token Exchange System
+- Direct token transfers between users
+- NFT trading capabilities
+- Marketplace for buying/selling cars
+- Transaction history tracking
+- Wallet balance management
+
+### 4. User Features
+- Profile management with gaming statistics
+- Personal garage for car collection
+- Racing history and achievements
+- Wallet integration with Solana
+- Betting system for races
+- Social features and leaderboards
+
+## Technical Architecture
+
+### Frontend Architecture (Mermaid)
 
 ```mermaid
 graph TD
@@ -94,7 +140,7 @@ graph TD
     Images[logo.png, guci.png, car-white.png, ...]
   end
 
-  %% Relaciones principales
+  %% Main relationships
   Login --> Routes
   Register --> Routes
   Dashboard --> Routes
@@ -114,9 +160,7 @@ graph TD
   Images --> HomePage
 ```
 
----
-
-### Arquitectura Backend (Mermaid)
+### Backend Architecture (Mermaid)
 
 ```mermaid
 graph TD
@@ -213,7 +257,7 @@ graph TD
     TokenMetadata --> BillingController
   end
 
-  %% Relaciones principales
+  %% Main relationships
   Index --> AuthRoute
   Index --> WalletRoute
   Index --> BillingRoute
@@ -230,82 +274,152 @@ graph TD
   DashboardRoute --> DashboardController
 ```
 
----
-
-### Modelo ER (Base de datos)
+### Database ER Model
 
 ```mermaid
 erDiagram
   USER ||--o{ WALLET : has
   USER ||--o{ PAYMENT_CARD : owns
   USER ||--o{ BILLING_INFO : has
+  USER ||--o{ USER_CARS : owns
+  USER ||--o{ RACE_RESULTS : participates
+  USER ||--o{ BETS : places
   BILLING_INFO ||--o{ BILLING_NOTIFICATION : generates
   BILLING_INFO ||--o{ BILLING_TRANSACTION : generates
   BILLING_TRANSACTION ||--o{ BALANCE_HISTORY : logs
+  CARS ||--o{ USER_CARS : belongs_to
+  CARS ||--o{ CAR_MARKET : listed_in
+  RACE ||--o{ RACE_RESULTS : contains
+  RACE ||--o{ BETS : has
+  TOKEN_EXCHANGES ||--o{ USER : involves
+  NFT_EXCHANGES ||--o{ USER : involves
 ```
 
----
-
-## Explicación de arquitectura
+## Technical Stack
 
 ### Frontend
-- **React + Vite + Tailwind**: SPA moderna, modular y rápida.
-- **Features**: Cada módulo (auth, dashboard, wallet, etc.) está aislado y es reutilizable.
-- **UI**: Componentes visuales reutilizables y tematizados.
-- **Context**: Gestión global de tema (oscuro/claro).
-- **Routing**: Navegación protegida y pública.
-- **Integración**: Consume APIs REST del backend y servicios de blockchain.
+- React + Vite + TypeScript
+- Tailwind CSS for styling
+- Three.js + React Three Fiber for 3D rendering
+- @solana/web3.js for blockchain integration
+- TanStack Query for state management
+- WebSocket for real-time updates
 
 ### Backend
-- **Node.js + Express**: API RESTful robusta y escalable.
-- **Modelos**: Definidos en JS, reflejan la estructura de la base de datos.
-- **Controladores**: Lógica de negocio separada por dominio.
-- **Rutas**: Endpoints RESTful claros y organizados.
-- **Middlewares**: Seguridad y validación.
-- **Solana**: Scripts para operaciones blockchain.
-- **Migraciones**: Scripts SQL versionados para mantener la base de datos.
+- Node.js + Express
+- PostgreSQL database
+- Solana Web3.js for blockchain operations
+- JWT authentication
+- WebSocket for real-time race updates
+- Stripe integration for fiat payments
 
----
+### Blockchain
+- Solana Testnet
+- SPL Token implementation
+- NFT.Storage for metadata
+- Metaplex for NFT standards
 
-## Detalles de código
+## API Endpoints
 
-- **Frontend**: Uso de hooks, contextos, componentes funcionales, integración con Stripe y Solana.
-- **Backend**: Uso de controladores, middlewares, modelos, integración con Solana, migraciones SQL.
+### Authentication
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `GET /auth/user` - Get user data
 
----
+### Game
+- `GET /api/races/active` - Get active races
+- `POST /api/races/bet` - Place a bet
+- `GET /api/races/history` - Get race history
 
-## Dependencias principales
+### Exchange
+- `POST /exchange/token` - Transfer tokens
+- `POST /exchange/nft` - Transfer NFTs
+- `GET /transactions/history/:userId` - Transaction history
 
-### Frontend
-- `react`, `react-dom`, `react-router-dom`
-- `tailwindcss`, `postcss`
-- `@stripe/stripe-js`
-- `@solana/web3.js`
+### Marketplace
+- `GET /marketplace/listings` - Get available cars
+- `POST /marketplace/buy/:listingId` - Buy a car
+- `POST /marketplace/sell` - List a car for sale
 
-### Backend
-- `express`, `cors`, `jsonwebtoken`
-- `sequelize` o `mongoose` (según ORM)
-- `@solana/web3.js`
-- `dotenv`
-- `stripe`
+## Development Setup
 
----
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/Racing-F1.git
+cd Racing-F1
+```
 
-## Endpoints del backend y objetos utilizados
+2. Install dependencies
+```bash
+# Frontend
+cd src/app
+npm install
 
-| Método | Endpoint                | Descripción                        | Controlador           | Modelo/s Relacionados      |
-|--------|-------------------------|------------------------------------|-----------------------|----------------------------|
-| POST   | /api/auth/register      | Registro de usuario                | authController        | User                       |
-| POST   | /api/auth/login         | Login de usuario                   | authController        | User                       |
-| GET    | /api/wallet/:id         | Obtener wallet de usuario          | walletController      | Wallet                     |
-| POST   | /api/wallet/transfer    | Transferir fondos                  | walletController      | Wallet, User               |
-| GET    | /api/billing/info       | Info de facturación                | billingController     | BillingInfo, User          |
-| POST   | /api/billing/pay        | Realizar pago                      | billingController     | BillingTransaction, User   |
-| GET    | /api/transactions       | Historial de transacciones         | transactionsController| BillingTransaction         |
-| POST   | /api/payment/stripe     | Pago con Stripe                    | paymentController     | PaymentCard, User          |
-| GET    | /api/exchange/rates     | Obtener tasas de cambio            | exchangeController    | -                          |
-| POST   | /api/exchange/trade     | Realizar trade                     | exchangeController    | User, Wallet               |
-| GET    | /api/dashboard/summary  | Resumen para dashboard             | dashboardController   | User, Wallet, BillingInfo  |
+# Backend
+cd server
+npm install
+```
 
----
+3. Set up environment variables
+```bash
+# Frontend (.env)
+VITE_API_URL=http://localhost:8080
+VITE_WS_URL=ws://localhost:8080
+VITE_SOLANA_NETWORK=testnet
 
+# Backend (.env)
+PORT=8080
+JWT_SECRET=your_jwt_secret
+SOLANA_PRIVATE_KEY=your_solana_private_key
+MINT_ADDRESS_SOLANA=4MCKxwSEF3M6y9WsLiJtkoKaMtWh7eRhuV1gRUVZMg6w
+```
+
+4. Start the development servers
+```bash
+# Frontend
+npm run dev
+
+# Backend
+npm run dev
+```
+
+## Security Considerations
+
+- JWT authentication for API endpoints
+- Solana wallet security best practices
+- Rate limiting on sensitive endpoints
+- Input validation and sanitization
+- Secure WebSocket connections
+- Environment variable protection
+
+## Testing
+
+- Unit tests for core components
+- Integration tests for API endpoints
+- E2E tests for critical user flows
+- Smart contract testing on testnet
+- Performance testing for race mechanics
+
+## Deployment
+
+- Frontend: Vercel/Netlify
+- Backend: AWS/DigitalOcean
+- Database: AWS RDS/DigitalOcean Managed Database
+- WebSocket: AWS WebSocket API
+- Monitoring: DataDog/New Relic
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, please contact support@racingf1.com or join our Discord community.

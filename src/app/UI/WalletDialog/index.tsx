@@ -1,4 +1,3 @@
-import React from 'react';
 import type { WelcomeGifts } from '../../services/walletService';
 
 interface WalletDialogProps {

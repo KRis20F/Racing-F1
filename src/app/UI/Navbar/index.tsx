@@ -2,9 +2,6 @@ import { ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../assets/svg/guci.svg";
 
-// Obtener el base path de Vite
-const BASE_PATH = import.meta.env.BASE_URL || '/';
-
 interface NavbarProps {
   children?: ReactNode;
 }
@@ -16,53 +13,53 @@ export default function Navbar({ children }: NavbarProps) {
   const ROUTES = [
     {
       name: "Game",
-      path: `${BASE_PATH}game`,
+      path: "/game",
       subRoutes: [
         {
           name: "Race",
-          path: `${BASE_PATH}game/race`,
+          path: "/game/race",
           description: "Compete in exciting races with other players",
         },
         {
           name: "Betting",
-          path: `${BASE_PATH}game/betting`,
+          path: "/game/betting",
           description: "Place your bets on upcoming races",
         },
         {
           name: "Leaderboard",
-          path: `${BASE_PATH}game/leaderboard`,
+          path: "/game/leaderboard",
           description: "Check the top players rankings",
         },
       ],
     },
     {
       name: "Shop",
-      path: `${BASE_PATH}shop`,
+      path: "/shop",
       description: "Purchase items and upgrades for your cars",
     },
     {
       name: "Exchange",
-      path: `${BASE_PATH}exchange`,
+      path: "/exchange",
       description: "Trade items with other players",
     },
     {
       name: "Profile",
-      path: `${BASE_PATH}profile`,
+      path: "/profile",
       subRoutes: [
         {
           name: "Wallet",
-          path: `${BASE_PATH}profile/wallet`,
+          path: "/profile/wallet",
           description: "Manage your in-game currency",
         },
       ],
     },
     {
       name: "Login",
-      path: `${BASE_PATH}auth?mode=login`,
+      path: "/auth?mode=login",
     },
     {
       name: "Register",
-      path: `${BASE_PATH}auth?mode=register`,
+      path: "/auth?mode=register",
     },
   ];
 
@@ -84,7 +81,7 @@ export default function Navbar({ children }: NavbarProps) {
           >
             <h1
               className="text-xl font-bold cursor-pointer text-white"
-              onClick={() => navigate(`${BASE_PATH}`)}
+              onClick={() => navigate("/")}
             >
               <img src={Logo} alt="Logo" className="w-14 h-14" />
             </h1>

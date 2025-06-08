@@ -2,7 +2,8 @@ import {
   Navigate,
   Outlet,
   Routes as RouterRoutes,
-  Route
+  Route,
+  useLocation
 } from "react-router-dom";
 import Game from "../features/game/Game";
 import Exchange from "../features/exchange/Exchange";
@@ -17,89 +18,64 @@ import Home from "../features/home/Home";
 import { ShopPage } from "../features/shopv2/ShopV2";
 import Garage from "../features/userDashboard/components/Garage";
 import { ShopContextProvider } from "../features/shopv2/services/shop.context";
+import { useAuthContext } from "../providers/AuthProvider";
 
-const LandingPage = () => {
-  return (
-    <Home />
-  );
+// Componente para manejar la redirección de autenticación
+const AuthRoute = () => {
+  const { isAuthenticated } = useAuthContext();
+  const location = useLocation();
+
+  if (isAuthenticated) {
+    const from = location.state?.from || '/dashboard';
+    return <Navigate to={from} replace />;
+  }
+
+  return <AuthContainer />;
 };
 
 const Routes = () => {
-  const MainLayout = () => {
-    return (
-      <Navbar>
-        <Outlet />
-      </Navbar>
-    );
-  };
-
   return (
     <RouterRoutes>
       {/* Public routes */}
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<LandingPage />} />
+      <Route path="/" element={<Navbar><Outlet /></Navbar>}>
+        <Route index element={<Home />} />
+        <Route path="shop" element={
+          <ShopContextProvider>
+            <ShopPage />
+          </ShopContextProvider>
+        } />
       </Route>
 
-      {/* Auth route */}
-      <Route path="/auth" element={<AuthContainer />} />
+      {/* Auth routes - No Navbar */}
+      <Route path="/auth" element={<AuthRoute />} />
 
-      {/* Dashboard routes (protegidas) */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<div />} />
-        <Route path="billing" element={<Billing />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="garage" element={<Garage />} />
-      </Route>
-
-      {/* Protected routes with navbar */}
-      <Route path="/" element={<MainLayout />}>
-        <Route
-          path="shop"
-          element={
-            <ShopContextProvider>
-              <ShopPage />
-            </ShopContextProvider>
-          }
-        />
-        <Route
-          path="exchange"
-          element={
-            <ProtectedRoute>
-              <Exchange />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="game"
-          element={
-            <ProtectedRoute>
-              <Outlet />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Game />} />
-          <Route
-            path="race"
-            element={<RaceTrack isBetting={false} betAmount={0} isSubmittingResult={false} />}
-          />
-          <Route
-            path="betting"
-            element={<RaceTrack isBetting={true} betAmount={100} isSubmittingResult={false} />}
-          />
-          <Route
-            path="leaderboard"
-            element={<div>Leaderboard - Coming Soon</div>}
-          />
+      {/* Protected routes - With Navbar */}
+      <Route element={
+        <ProtectedRoute>
+          <Navbar>
+            <Outlet />
+          </Navbar>
+        </ProtectedRoute>
+      }>
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<div />} />
+          <Route path="billing" element={<Billing />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="garage" element={<Garage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+
+        <Route path="/exchange" element={<Exchange />} />
+        
+        <Route path="/game">
+          <Route index element={<Game />} />
+          <Route path="race" element={<RaceTrack isBetting={false} betAmount={0} isSubmittingResult={false} />} />
+          <Route path="betting" element={<RaceTrack isBetting={true} betAmount={100} isSubmittingResult={false} />} />
+          <Route path="leaderboard" element={<div>Leaderboard - Coming Soon</div>} />
+        </Route>
       </Route>
+
+      {/* Catch-all route */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </RouterRoutes>
   );
 };

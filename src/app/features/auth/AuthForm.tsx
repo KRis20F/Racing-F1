@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../api/mutations/auth.mutations";
 import { useWallet } from '../../hooks/useWallet';
@@ -136,6 +136,8 @@ const AuthContainer = () => {
                 value={form.username} 
                 onChange={handleChange} 
                 required 
+                autoComplete="username"
+                aria-label="Username"
                 className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400 focus:dark:border-indigo-500" 
               />
             )}
@@ -146,6 +148,8 @@ const AuthContainer = () => {
               value={form.email} 
               onChange={handleChange} 
               required 
+              autoComplete="email"
+              aria-label="Email"
               className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400 focus:dark:border-indigo-500" 
             />
             <input 
@@ -155,7 +159,8 @@ const AuthContainer = () => {
               value={form.password} 
               onChange={handleChange} 
               required 
-              autoComplete="current-password"
+              autoComplete={isRegistering ? "new-password" : "current-password"}
+              aria-label="Password"
               className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400 focus:dark:border-indigo-500" 
             />
             {isRegistering && (
@@ -165,6 +170,8 @@ const AuthContainer = () => {
                 value={form.fechaNacimiento} 
                 onChange={handleChange} 
                 required 
+                autoComplete="bday"
+                aria-label="Birth date"
                 className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 focus:dark:border-indigo-500" 
               />
             )}

@@ -17,11 +17,18 @@ api.interceptors.request.use(
     const token = storage.getToken();
     if (token) {
       config.headers['x-auth-token'] = token;
+      console.log('Request with token:', {
+        url: config.url,
+        method: config.method,
+        token: token.substring(0, 10) + '...'
+      });
+    } else {
+      console.warn('No auth token found for request:', config.url);
     }
     return config;
   },
   (error) => {
-    console.error('API Error:', error);
+    console.error('API Request Error:', error);
     return Promise.reject(error);
   }
 );

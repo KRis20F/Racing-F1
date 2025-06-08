@@ -48,10 +48,10 @@ export function CardList({ carList, loading }: CardListProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {carList.map((car) => {
-                const modelName = car.model_path ? car.model_path.split('/').pop()?.replace('.glb', '') : '';
+                const uniqueKey = `car-${car.id}-${car.market_status}-${Date.now()}`;
                 return (
                     <CarCard 
-                        key={`car-${car.id}-${modelName}`} 
+                        key={uniqueKey} 
                         car={car} 
                     />
                 );

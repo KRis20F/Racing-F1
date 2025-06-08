@@ -1,4 +1,3 @@
-import React from 'react';
 import type { CarListing } from '../../api/endpoints/marketplace.endpoints';
 
 interface ProductCardProps {

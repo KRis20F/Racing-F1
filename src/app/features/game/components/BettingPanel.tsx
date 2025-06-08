@@ -1,5 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { api } from '../../../api/api.config';
 // import { SolanaService } from '../../../api/config/solana';
 
 // TODO: Implementar diseño de panel de apuestas
@@ -25,6 +26,7 @@ const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isB
   const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [betAmount, setBetAmount] = useState<number>(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAvailablePlayers();
@@ -32,11 +34,13 @@ const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isB
 
   const fetchAvailablePlayers = async () => {
     try {
-      const response = await fetch('/api/available-players');
-      const data = await response.json();
-      setAvailablePlayers(data);
+      setError(null);
+      const response = await api.get('/api/game/available-players');
+      setAvailablePlayers(response.data);
     } catch (error) {
       console.error('Error fetching players:', error);
+      setError('Error loading available players. Please try again later.');
+      setAvailablePlayers([]);
     }
   };
 
