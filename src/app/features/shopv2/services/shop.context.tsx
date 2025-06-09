@@ -5,13 +5,13 @@ import { useUserData } from '@/app/hooks/useUserData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type ShopContextType = {
-    buyCar: (car: MarketplaceCar) => void;
+    buyCar: (car: MarketplaceCar) => Promise<any>;
     isLoading: boolean;
     error: Error | null;
 }
 
 export const ShopContext = createContext<ShopContextType>({
-    buyCar: () => {},
+    buyCar: async () => {},
     isLoading: false,
     error: null
 });
@@ -22,10 +22,10 @@ export function ShopContextProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient();
     const { profile } = useUserData();
 
-    const { mutate: buyCarMutation, isPending: isLoading, error } = useMutation({
+    const { mutateAsync: buyCarMutation, isPending: isLoading, error } = useMutation({
         mutationFn: async (car: MarketplaceCar) => {
             if (!profile?.id) throw new Error('Usuario no autenticado');
-            if (car.market_status !== 'en_venta') throw new Error('Este auto no está disponible');
+            if (car.market_status?.trim().toLowerCase() !== 'en_venta') throw new Error('Este auto no está disponible');
             
             return shopEndpoints.buyCar({
                 carId: car.id
@@ -38,8 +38,9 @@ export function ShopContextProvider({ children }: { children: ReactNode }) {
         }
     });
 
+    // buyCar ahora es asíncrona y retorna una promesa
     const buyCar = (car: MarketplaceCar) => {
-        buyCarMutation(car);
+        return buyCarMutation(car);
     };
 
     return (

@@ -37,22 +37,8 @@ export function CarCard({ car }: CardCardProps) {
         if (!isAvailable) return;
         setBuying(true);
         try {
-            await new Promise((resolve, reject) => {
-                // Usamos el contexto que ya refresca queries
-                buyCar(car);
-                // Esperamos a que isLoading pase a false (máximo 2s)
-                let waited = 0;
-                const interval = setInterval(() => {
-                    if (!isLoading) {
-                        clearInterval(interval);
-                        resolve(true);
-                    } else if (waited > 2000) {
-                        clearInterval(interval);
-                        reject(new Error('Timeout al comprar.'));
-                    }
-                    waited += 100;
-                }, 100);
-            });
+            await buyCar(car);
+            console.log("Compra realizada con éxito")
             alert('¡Compra realizada con éxito!');
         } catch (e: any) {
             alert('Error al comprar: ' + (error?.message || e?.message || e || 'Error desconocido'));
@@ -60,6 +46,7 @@ export function CarCard({ car }: CardCardProps) {
             setBuying(false);
         }
     };
+
 
     return (
         <div className="p-5 bg-[#111C44] rounded-xl text-white hover:bg-[#1A275B] transition-colors">
