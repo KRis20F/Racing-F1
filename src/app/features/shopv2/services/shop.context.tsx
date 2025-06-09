@@ -16,6 +16,8 @@ export const ShopContext = createContext<ShopContextType>({
     error: null
 });
 
+
+
 export function ShopContextProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient();
     const { profile } = useUserData();

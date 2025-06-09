@@ -1,6 +1,5 @@
 import type { MarketplaceCar } from "@/app/api/endpoints/marketplace.endpoints";
 import { CarCard } from "./CarCard";
-import { useShopContext } from "../services/shop.context";
 
 interface CardListProps {
     carList: MarketplaceCar[];
@@ -8,8 +7,6 @@ interface CardListProps {
 }
 
 export function CardList({ carList, loading }: CardListProps) {
-    const { cars } = useShopContext();
-
     if (loading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -50,11 +47,15 @@ export function CardList({ carList, loading }: CardListProps) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cars.map((car, index) => (
-                <div key={`${car.id}-${car.status}-${index}`}>
-                    <CarCard car={car} />
-                </div>
-            ))}
+            {carList.map((car) => {
+                const uniqueKey = `car-${car.id}-${car.market_status}-${Date.now()}`;
+                return (
+                    <CarCard 
+                        key={uniqueKey} 
+                        car={car} 
+                    />
+                );
+            })}
         </div>
     );
 }
