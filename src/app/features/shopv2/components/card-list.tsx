@@ -45,10 +45,19 @@ export function CardList({ carList, loading }: CardListProps) {
         );
     }
 
+    // Eliminar autos duplicados por key compuesta antes de renderizar
+    const seen = new Set();
+    const uniqueCars = carList.filter(car => {
+        const k = `car-${car.id}-${car.market_status}-${car.model_path || car.name}-${car.price}`;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+    });
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {carList.map((car) => {
-                const uniqueKey = `car-${car.id}-${car.market_status}-${Date.now()}`;
+            {uniqueCars.map((car) => {
+                const uniqueKey = `car-${car.id}-${car.market_status}-${car.model_path || car.name}-${car.price}`;
                 return (
                     <CarCard 
                         key={uniqueKey} 
