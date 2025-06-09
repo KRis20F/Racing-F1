@@ -14,7 +14,7 @@ export interface MarketplaceCar {
   current_price: string;
   price: number;
   description: string;
-  market_status: 'available' | 'sold' | 'pending';
+  market_status: 'en_venta' | 'pending';
   model_path: string;
   preview_image: string;
   thumbnail_image: string;

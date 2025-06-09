@@ -18,10 +18,10 @@ function ModelError() {
     );
 }
 
-export function 
-CarCard({ car }: CardCardProps) {
-    const { buyCar, isLoading } = useContext(ShopContext);
+export function CarCard({ car }: CardCardProps) {
+    const { buyCar, isLoading, error } = useContext(ShopContext);
     const [modelError, setModelError] = useState(false);
+    const [buying, setBuying] = useState(false);
 
     const getModelName = (path: string) => {
         const matches = path.toLowerCase().match(/([^/]+)\.glb$/);
@@ -30,6 +30,36 @@ CarCard({ car }: CardCardProps) {
 
     const modelName = car.model_path ? getModelName(car.model_path) : 'default';
     const modelConfig = CAR_MODELS_CONFIG[modelName] || CAR_MODELS_CONFIG.default;
+    const isAvailable = car.market_status?.trim().toLowerCase() === 'en_venta';
+
+    // Manejo robusto de compra con feedback
+    const handleBuy = async () => {
+        if (!isAvailable) return;
+        setBuying(true);
+        try {
+            await new Promise((resolve, reject) => {
+                // Usamos el contexto que ya refresca queries
+                buyCar(car);
+                // Esperamos a que isLoading pase a false (máximo 2s)
+                let waited = 0;
+                const interval = setInterval(() => {
+                    if (!isLoading) {
+                        clearInterval(interval);
+                        resolve(true);
+                    } else if (waited > 2000) {
+                        clearInterval(interval);
+                        reject(new Error('Timeout al comprar.'));
+                    }
+                    waited += 100;
+                }, 100);
+            });
+            alert('¡Compra realizada con éxito!');
+        } catch (e: any) {
+            alert('Error al comprar: ' + (error?.message || e?.message || e || 'Error desconocido'));
+        } finally {
+            setBuying(false);
+        }
+    };
 
     return (
         <div className="p-5 bg-[#111C44] rounded-xl text-white hover:bg-[#1A275B] transition-colors">
@@ -135,19 +165,19 @@ CarCard({ car }: CardCardProps) {
                     <p className="text-sm text-gray-400">Precio</p>
                     <p className="text-xl font-bold">{car.current_price} RCT</p>
                     <p className="text-sm text-gray-400">
-                        Estado: {car.market_status === 'available' ? 'Disponible' : 'No disponible'}
+                        Estado: {car.market_status === 'en_venta' ? 'Disponible' : 'No disponible'}
                     </p>
                 </div>
                 <button 
                     className={`px-4 py-2 rounded-xl font-medium transition-colors ${
-                        isLoading || car.market_status !== 'available'
+                        !isAvailable
                             ? 'bg-purple-600/50 cursor-not-allowed' 
-                            : 'bg-purple-600 hover:bg-purple-700'
+                            : buying ? 'bg-purple-600/70' : 'bg-purple-600 hover:bg-purple-700'
                     }`}
-                    onClick={() => car.market_status === 'available' && buyCar(car)}
-                    disabled={isLoading || car.market_status !== 'available'}
+                    onClick={handleBuy}
+                    disabled={!isAvailable || buying}
                 >
-                    Comprar
+                    {buying ? 'Comprando...' : 'Comprar'}
                 </button>
             </div>
         </div>
