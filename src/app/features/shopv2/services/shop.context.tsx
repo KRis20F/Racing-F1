@@ -25,7 +25,7 @@ export function ShopContextProvider({ children }: { children: ReactNode }) {
     const { mutate: buyCarMutation, isPending: isLoading, error } = useMutation({
         mutationFn: async (car: MarketplaceCar) => {
             if (!profile?.id) throw new Error('Usuario no autenticado');
-            if (car.market_status !== 'available') throw new Error('Este auto no está disponible');
+            if (car.market_status !== 'en_venta') throw new Error('Este auto no está disponible');
             
             return shopEndpoints.buyCar({
                 carId: car.id
