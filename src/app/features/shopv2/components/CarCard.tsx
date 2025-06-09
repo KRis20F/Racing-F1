@@ -38,10 +38,13 @@ export function CarCard({ car }: CardCardProps) {
         setBuying(true);
         try {
             await buyCar(car);
+            // Mostrar algo de sucess
             console.log("Compra realizada con éxito")
-            alert('¡Compra realizada con éxito!');
+            
         } catch (e: any) {
-            alert('Error al comprar: ' + (error?.message || e?.message || e || 'Error desconocido'));
+            // Mostrar algo de error
+
+            console.error(e)
         } finally {
             setBuying(false);
         }
