@@ -13,10 +13,11 @@ import { StatCard } from './components/StatCard';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import { CarModel } from '../../UI/CarModel';
+import { BASE_PATH } from '../../providers/AuthContext';
 
 export const Dashboard = () => {
   const location = useLocation();
-  const isDashboardRoot = location.pathname === '/dashboard';
+  const isDashboardRoot = location.pathname === BASE_PATH || location.pathname === `${BASE_PATH}/dashboard`;
   const [showWalletDialog, setShowWalletDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState<number | null>(null);
 
@@ -292,8 +293,9 @@ export const Dashboard = () => {
                             {profile.cars[selectedCar || 0]?.modelPath && (
                               <CarModel 
                                 modelPath={profile.cars[selectedCar || 0].modelPath}
-                                scale={100}
-                                position={[0, -0.35, 0]}
+                                scale={2}
+                                position={[0, -0.5, 0]}
+                                rotation={[0, Math.PI / 3, 0]}
                               />
                             )}
                             <ambientLight intensity={1} />

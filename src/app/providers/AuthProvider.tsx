@@ -1,75 +1,55 @@
-import { createContext, useContext, type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../api/mutations/auth.mutations';
-import type { UserData } from '../types/api/auth.types';
 import { storage } from '../utils/storage';
 import { useQueryClient } from '@tanstack/react-query';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  userData: UserData | null;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
-// Separar el hook del contexto
-export function useAuthContext() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
-  }
-  return context;
-}
+import { AuthContext, BASE_PATH } from './AuthContext';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Exportar el componente AuthProvider por separado
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return !!storage.getToken();
-  });
-
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!storage.getToken());
   const { user: userData, isLoadingUser } = useAuth();
   const queryClient = useQueryClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Actualizar autenticación cuando cambie el usuario
   useEffect(() => {
     if (userData) {
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData.profile));
+      localStorage.setItem('user', JSON.stringify(userData));
     }
   }, [userData]);
 
-  // Verificar autenticación y proteger rutas
   useEffect(() => {
     if (isLoggingOut || isLoadingUser) return;
 
-    const isAuthRoute = location.pathname.startsWith('/auth');
     const token = storage.getToken();
+    const currentPath = location.pathname;
 
-    // Si estamos en una ruta de autenticación y ya estamos autenticados
-    if (isAuthRoute && isAuthenticated && token) {
-      const from = location.state?.from || '/dashboard';
-      navigate(from, { replace: true });
+    // Si estamos en una ruta de autenticación, no hacer nada
+    if (currentPath.includes('/auth')) {
       return;
     }
 
-    // Si no estamos en una ruta de autenticación y no estamos autenticados
-    if (!isAuthRoute && !isAuthenticated && !token) {
-      navigate('/auth?mode=login', {
+    // Si el usuario está autenticado y trata de acceder a auth, redirigir al dashboard
+    if (isAuthenticated && token && currentPath === `${BASE_PATH}/auth`) {
+      navigate(`${BASE_PATH}/dashboard`, { replace: true });
+      return;
+    }
+
+    // Si el usuario no está autenticado y trata de acceder a rutas protegidas
+    const isPublicPath = currentPath === '/' || currentPath === BASE_PATH;
+    if (!isAuthenticated && !token && !isPublicPath) {
+      navigate(`${BASE_PATH}/auth?mode=login`, {
         replace: true,
-        state: { from: location.pathname }
+        state: { from: currentPath }
       });
-      return;
     }
-  }, [isAuthenticated, location.pathname, navigate, isLoadingUser, isLoggingOut]);
+  }, [isAuthenticated, isLoadingUser, isLoggingOut, location.pathname, navigate]);
 
   const handleLogout = async () => {
     try {
@@ -103,13 +83,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         sessionStorage.removeItem(key);
       });
 
-      // Redireccionar y recargar
-      window.location.href = '/auth?mode=login';
+      // Redireccionar
+      navigate(`${BASE_PATH}/auth?mode=login`, { replace: true });
     } catch (error) {
       console.error('Error during logout:', error);
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = '/auth?mode=login';
+      navigate(`${BASE_PATH}/auth?mode=login`, { replace: true });
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 

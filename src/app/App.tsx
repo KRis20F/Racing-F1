@@ -1,42 +1,24 @@
-import { QueryProvider } from './providers/QueryProvider';
-import { AuthProvider } from './providers/AuthProvider';
-import Routes from './routes';
-import { Toaster } from 'react-hot-toast';
+import { Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { WalletProvider } from '@solana/wallet-adapter-react';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { useMemo } from 'react';
-
-// Obtener el base path de Vite y asegurarnos de que no termine en /
-const BASE_PATH = import.meta.env.BASE_URL.endsWith('/') 
-  ? import.meta.env.BASE_URL.slice(0, -1) 
-  : import.meta.env.BASE_URL;
+import { AuthProvider } from './providers/AuthProvider';
+import { QueryProvider } from './providers/QueryProvider';
+import { WalletConnectionProvider } from './providers/WalletConnectionProvider';
+import AppRoutes from './routes';
+import '../assets/css/index.css';
 
 function App() {
-  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
-
   return (
-    <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#333',
-            color: '#fff',
-          },
-        }}
-      />
+    <Suspense fallback={<div>Loading...</div>}>
       <QueryProvider>
-        <BrowserRouter basename={BASE_PATH}>
-          <WalletProvider wallets={wallets} autoConnect>
+        <BrowserRouter>
+          <WalletConnectionProvider>
             <AuthProvider>
-              <Routes />
+              <AppRoutes />
             </AuthProvider>
-          </WalletProvider>
+          </WalletConnectionProvider>
         </BrowserRouter>
       </QueryProvider>
-    </>
+    </Suspense>
   );
 }
 

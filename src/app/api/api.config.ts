@@ -17,18 +17,11 @@ api.interceptors.request.use(
     const token = storage.getToken();
     if (token) {
       config.headers['x-auth-token'] = token;
-      console.log('Request with token:', {
-        url: config.url,
-        method: config.method,
-        token: token.substring(0, 10) + '...'
-      });
-    } else {
-      console.warn('No auth token found for request:', config.url);
     }
     return config;
   },
   (error) => {
-    console.error('API Request Error:', error);
+    console.error('API Error:', error);
     return Promise.reject(error);
   }
 );
@@ -39,26 +32,23 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response) {
       // El servidor respondió con un código de error
-      console.error('API Error:', error.response);
-      
-      // Si el error es 401 (no autorizado), limpiar el token
-      if (error.response.status === 401) {
-        storage.clearToken();
-        window.location.href = '/login';
-      }
-
-      // Si el error es 403 (prohibido), redirigir a la página de inicio
-      if (error.response.status === 403) {
-        window.location.href = '/';
-      }
-
-      // Registrar detalles del error para debugging
       console.error('API Error Response:', {
         url: error.response.config.url,
         status: error.response.status,
         data: error.response.data,
         message: error.message
       });
+      
+      // Si el error es 401 (no autorizado), limpiar el token
+      if (error.response.status === 401) {
+        storage.clearToken();
+        window.location.href = '/auth?mode=login';
+      }
+
+      // Si el error es 403 (prohibido), redirigir a la página de inicio
+      if (error.response.status === 403) {
+        window.location.href = '/';
+      }
     } else if (error.request) {
       // La petición fue hecha pero no se recibió respuesta
       console.error('API Error: No response received', error.request);

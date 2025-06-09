@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../assets/svg/guci.svg";
-import { useAuthContext } from "../../providers/AuthProvider";
+import { useAuthContext } from "../../providers/hooks/useAuthContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Sidebar = () => {
             </svg>
           ),
           path: "/",
-          onClick: () => navigate("/")
+          onClick: () => navigate("/Racing-F1")
         },
         {
           name: "Dashboard",
@@ -38,8 +38,8 @@ const Sidebar = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
             </svg>
           ),
-          path: "/dashboard/garage",
-          onClick: () => navigate("/dashboard/garage")
+          path: "/Racing-F1/dashboard/garage",
+          onClick: () => navigate("/Racing-F1/dashboard/garage")
         },
         {
           name: "Profile",
@@ -48,8 +48,8 @@ const Sidebar = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           ),
-          path: "/dashboard/profile",
-          onClick: () => navigate("/dashboard/profile")
+          path: "/Racing-F1/dashboard/profile",
+          onClick: () => navigate("/Racing-F1/dashboard/profile")
         },
         {
           name: "Billing",
@@ -58,8 +58,8 @@ const Sidebar = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           ),
-          path: "/dashboard/billing",
-          onClick: () => navigate("/dashboard/billing")
+          path: "/Racing-F1/dashboard/billing",
+          onClick: () => navigate("/Racing-F1/dashboard/billing")
         }
       ]
     },
