@@ -5,6 +5,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import type { GroupProps } from '@react-three/fiber';
 import * as THREE from 'three';
 
+function joinUrl(base: string, path: string) {
+  return `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+}
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const MODEL_PATH = '2011_mosler_super_gt';
 
@@ -34,7 +38,7 @@ function ErrorMessage() {
 
 // Componente para el modelo 3D
 function Model(props: GroupProps) {
-  const fullModelPath = `${API_URL}/models3d/${MODEL_PATH}.glb`;
+  const fullModelPath = joinUrl(API_URL, `models3d/${MODEL_PATH}.glb`);
   console.log('Attempting to load model from:', fullModelPath);
   
   try {

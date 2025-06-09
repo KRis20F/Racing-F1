@@ -4,6 +4,10 @@ import { useThree } from '@react-three/fiber';
 import type { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
 
+function joinUrl(base: string, path: string) {
+  return `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+}
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 interface CarModelProps {
@@ -84,8 +88,8 @@ export function CarModel({
   const fullModelPath = modelPath.startsWith('http') 
     ? modelPath 
     : modelPath.startsWith('/') 
-      ? `${API_URL}${modelPath}`
-      : `${API_URL}/models3d/${modelPath}`;
+      ? joinUrl(API_URL, modelPath)
+      : joinUrl(API_URL, `models3d/${modelPath}`);
   
   // Load the model (hooks must be at the top level)
   const { scene } = useGLTF(fullModelPath) as GLTF & { errors?: string[] };
