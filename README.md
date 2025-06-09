@@ -1,4 +1,4 @@
-# Racing F1 - Technical Documentation
+# Racing F1 - Technical Documentation :3
 
 ## Overview
 
