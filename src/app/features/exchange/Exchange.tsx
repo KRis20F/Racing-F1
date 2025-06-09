@@ -5,6 +5,7 @@ import PlaceOrder from "./components/PlaceOrder";
 import MarketStats from "./components/MarketStats";
 import { useExchange } from "./hooks/useExchange";
 import { toast } from "react-hot-toast";
+import Navbar from "../../UI/Navbar";
 
 // TODO: Estilizar con un diseño similar a Binance
 // - Usar un tema oscuro con acentos en verde/rojo
@@ -17,7 +18,7 @@ export const Exchange: React.FC = () => {
   
   const {
     exchangeToken,
-    isExchangingToken,
+    isExchangingToken,  
     exchangeTokenError,
     transferToken,
     isTransferringToken,
@@ -41,6 +42,8 @@ export const Exchange: React.FC = () => {
   }, [exchangeTokenError, transferTokenError, transferNFTError]);
 
   return (
+    <div className="flex flex-col">
+      <Navbar>  
     <div className="min-h-screen pt-36 bg-[#0b1437] text-white p-6">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-8 flex items-center justify-between">
@@ -95,8 +98,10 @@ export const Exchange: React.FC = () => {
           <div className="col-span-12 lg:col-span-4">
             <MarketStats pair={selectedPair} />
           </div>
+          </div>
         </div>
       </div>
+    </Navbar>
     </div>
   );
 };

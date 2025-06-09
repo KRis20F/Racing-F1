@@ -79,105 +79,122 @@ const AuthForm = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="relative w-[900px] h-[500px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
-        <div className="absolute w-1/2 h-full p-10 flex flex-col items-center justify-center bg-white dark:bg-gray-800 z-10"
-             style={{ left: isRegistering ? '50%' : '0', transition: 'left 0.5s ease-in-out' }}>
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-            {isRegistering ? "Create Account" : "Sign In"}
-          </h2>
-          <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4">
-            {successMessage && (
-              <div className="text-green-500 text-sm text-center bg-green-50 dark:bg-green-900/10 p-2 rounded">
-                {successMessage}
-              </div>
-            )}
-            {isRegistering && (
-              <input 
-                name="username" 
-                type="text" 
-                placeholder="Username" 
-                value={form.username} 
-                onChange={handleChange} 
-                required 
-                className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400" 
-              />
-            )}
-            <input 
-              name="email" 
-              type="email" 
-              placeholder="Email" 
-              value={form.email} 
-              onChange={handleChange} 
-              required 
-              className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400" 
-            />
-            <input 
-              name="password" 
-              type="password" 
-              placeholder="Password" 
-              value={form.password} 
-              onChange={handleChange} 
-              required 
-              className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400" 
-            />
-            {isRegistering && (
-              <input 
-                name="fechaNacimiento" 
-                type="date" 
-                value={form.fechaNacimiento} 
-                onChange={handleChange} 
-                required 
-                className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600" 
-              />
-            )}
-            {(loginError || registerError) && (
-              <div className="text-red-500 text-sm bg-red-50 dark:bg-red-900/10 p-2 rounded">
-                {loginError?.message || registerError?.message}
-              </div>
-            )}
-            <button 
-              type="submit"
-              disabled={isLoading}
-              className={`w-full py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {isLoading ? 'Loading...' : (isRegistering ? 'Sign Up' : 'Sign In')}
-            </button>
-          </form>
-        </div>
-
-        <div 
-          className={`absolute top-0 w-1/2 h-full bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex items-center justify-center transition-all duration-500 ${
-            isRegistering ? 'left-0 rounded-r-[150px]' : 'right-0 rounded-l-[150px]'
-          }`}
+    <div className="min-h-screen flex items-center justify-center bg-[#0B1437] p-4">
+      <div className="w-full max-w-md">
+        {/* Botón de regreso */}
+        <button
+          onClick={() => navigate(BASE_PATH)}
+          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
-          <div className="text-center p-6">
-            <h2 className="text-3xl font-bold mb-2">
-              {!isRegistering ? "Welcome Back!" : "Hello, Friend!"}
-            </h2>
-            <p className="mb-6 text-gray-200">
-              {!isRegistering 
-                ? "Enter your personal details and start your journey with us" 
-                : "Already have an account?"}
-            </p>
-            <button 
-              onClick={toggleMode}
-              type="button"
-              className="px-6 py-2 border-2 border-white rounded-full text-white hover:bg-white hover:text-indigo-600 transition-colors"
-            >
-              {!isRegistering ? "Sign Up" : "Sign In"}
-            </button>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          Volver al inicio
+        </button>
+
+        <div className="bg-[#111C44] rounded-2xl p-8 shadow-lg">
+          <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-gray-900 dark:to-gray-800">
+            <div className="relative w-[900px] h-[500px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+              <div className="absolute w-1/2 h-full p-10 flex flex-col items-center justify-center bg-white dark:bg-gray-800 z-10"
+                   style={{ left: isRegistering ? '50%' : '0', transition: 'left 0.5s ease-in-out' }}>
+                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                  {isRegistering ? "Create Account" : "Sign In"}
+                </h2>
+                <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4">
+                  {successMessage && (
+                    <div className="text-green-500 text-sm text-center bg-green-50 dark:bg-green-900/10 p-2 rounded">
+                      {successMessage}
+                    </div>
+                  )}
+                  {isRegistering && (
+                    <input 
+                      name="username" 
+                      type="text" 
+                      placeholder="Username" 
+                      value={form.username} 
+                      onChange={handleChange} 
+                      required 
+                      className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400" 
+                    />
+                  )}
+                  <input 
+                    name="email" 
+                    type="email" 
+                    placeholder="Email" 
+                    value={form.email} 
+                    onChange={handleChange} 
+                    required 
+                    className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400" 
+                  />
+                  <input 
+                    name="password" 
+                    type="password" 
+                    placeholder="Password" 
+                    value={form.password} 
+                    onChange={handleChange} 
+                    required 
+                    className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-400" 
+                  />
+                  {isRegistering && (
+                    <input 
+                      name="fechaNacimiento" 
+                      type="date" 
+                      value={form.fechaNacimiento} 
+                      onChange={handleChange} 
+                      required 
+                      className="input-style dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600" 
+                    />
+                  )}
+                  {(loginError || registerError) && (
+                    <div className="text-red-500 text-sm bg-red-50 dark:bg-red-900/10 p-2 rounded">
+                      {loginError?.message || registerError?.message}
+                    </div>
+                  )}
+                  <button 
+                    type="submit"
+                    disabled={isLoading}
+                    className={`w-full py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors ${
+                      isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isLoading ? 'Loading...' : (isRegistering ? 'Sign Up' : 'Sign In')}
+                  </button>
+                </form>
+              </div>
+
+              <div 
+                className={`absolute top-0 w-1/2 h-full bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex items-center justify-center transition-all duration-500 ${
+                  isRegistering ? 'left-0 rounded-r-[150px]' : 'right-0 rounded-l-[150px]'
+                }`}
+              >
+                <div className="text-center p-6">
+                  <h2 className="text-3xl font-bold mb-2">
+                    {!isRegistering ? "Welcome Back!" : "Hello, Friend!"}
+                  </h2>
+                  <p className="mb-6 text-gray-200">
+                    {!isRegistering 
+                      ? "Enter your personal details and start your journey with us" 
+                      : "Already have an account?"}
+                  </p>
+                  <button 
+                    onClick={toggleMode}
+                    type="button"
+                    className="px-6 py-2 border-2 border-white rounded-full text-white hover:bg-white hover:text-indigo-600 transition-colors"
+                  >
+                    {!isRegistering ? "Sign Up" : "Sign In"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <WalletDialog
+              isOpen={showWelcomeGifts}
+              onClose={hideGifts}
+              welcomeGifts={welcomeGifts || undefined}
+            />
           </div>
         </div>
       </div>
-
-      <WalletDialog
-        isOpen={showWelcomeGifts}
-        onClose={hideGifts}
-        welcomeGifts={welcomeGifts || undefined}
-      />
     </div>
   );
 };

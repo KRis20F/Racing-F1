@@ -9,6 +9,7 @@ import { ShopPage as ShopV2 } from '../features/shopv2/ShopV2';
 import Profile from '../features/userDashboard/components/Profile';
 import Garage from '../features/userDashboard/components/Garage';
 import Billing from '../features/userDashboard/Billing/Index';
+import Home from '../features/home/Home';
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -30,7 +31,7 @@ const AuthRoute = () => {
   const { isAuthenticated } = useAuthContext();
 
   if (isAuthenticated) {
-    return <Navigate to={BASE_PATH} replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <AuthForm />;
@@ -40,12 +41,12 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Ruta raíz */}
-      <Route path="/" element={<Navigate to={BASE_PATH} replace />} />
-      <Route path={BASE_PATH} element={
+      <Route path="/" element={
         <ProtectedRoute>
-          <Dashboard />
+          <Home />
         </ProtectedRoute>
       } />
+      <Route path={BASE_PATH} element={<Navigate to="/" replace />} />
       
       {/* Rutas de autenticación */}
       <Route path={`${BASE_PATH}/auth`} element={<AuthRoute />} />
@@ -80,7 +81,7 @@ const AppRoutes = () => {
       } />
 
       {/* Ruta 404 */}
-      <Route path="*" element={<Navigate to={BASE_PATH} replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../../assets/svg/guci.svg";
+import { BASE_PATH } from "../../providers/AuthContext";
 
 interface NavbarProps {
   children?: ReactNode;
@@ -13,53 +14,53 @@ export default function Navbar({ children }: NavbarProps) {
   const ROUTES = [
     {
       name: "Game",
-      path: "/game",
+      path: `${BASE_PATH}/game`,
       subRoutes: [
         {
           name: "Race",
-          path: "/game/race",
+          path: `${BASE_PATH}/game/race`,
           description: "Compete in exciting races with other players",
         },
         {
           name: "Betting",
-          path: "/game/betting",
+          path: `${BASE_PATH}/game/betting`,
           description: "Place your bets on upcoming races",
         },
         {
           name: "Leaderboard",
-          path: "/game/leaderboard",
+          path: `${BASE_PATH}/game/leaderboard`,
           description: "Check the top players rankings",
         },
       ],
     },
     {
       name: "Shop",
-      path: "/shop",
+      path: `${BASE_PATH}/shop`,
       description: "Purchase items and upgrades for your cars",
     },
     {
       name: "Exchange",
-      path: "/exchange",
+      path: `${BASE_PATH}/exchange`,
       description: "Trade items with other players",
     },
     {
       name: "Profile",
-      path: "/profile",
+      path: `${BASE_PATH}/profile`,
       subRoutes: [
         {
           name: "Wallet",
-          path: "/profile/wallet",
+          path: `${BASE_PATH}/profile/wallet`,
           description: "Manage your in-game currency",
         },
       ],
     },
     {
       name: "Login",
-      path: "/auth?mode=login",
+      path: `${BASE_PATH}/auth?mode=login`,
     },
     {
       name: "Register",
-      path: "/auth?mode=register",
+      path: `${BASE_PATH}/auth?mode=register`,
     },
   ];
 

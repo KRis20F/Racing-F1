@@ -18,7 +18,7 @@ const Sidebar = () => {
             </svg>
           ),
           path: "/",
-          onClick: () => navigate("/Racing-F1")
+          onClick: () => navigate("/")
         },
         {
           name: "Dashboard",
