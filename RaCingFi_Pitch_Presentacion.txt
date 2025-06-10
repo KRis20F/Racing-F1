@@ -1,0 +1,205 @@
+# Guía de Presentación: RaCingFi - Donde el Gaming se Encuentra con la Libertad Financiera
+
+---
+
+## 1. **Slide de Título**
+**Título:**
+🎤 RaCingFi: Donde el Gaming se Encuentra con la Libertad Financiera
+
+**Visuales sugeridas:**
+- Logo de RaCingFi
+- Fondo futurista de carreras (pista, autos, efectos digitales)
+
+**Notas para el presentador:**
+- Usa un tono apasionado y energético.
+- Haz una pausa después del título para captar la atención.
+
+---
+
+## 2. **Tecnologías y Arquitectura**
+**Título:**
+🛠️ ¿Cómo está construido RaCingFi?
+
+**Frontend:**
+- **React** (Vite + TypeScript + TailwindCSS)
+- UI moderna, responsiva y animada
+- Integración con TanStack Query para manejo eficiente de datos
+- Modelos 3D de autos con **react-three-fiber**
+- Desplegado en **GitHub Pages**
+
+**Backend:**
+- **Node.js** + **Express**
+- **Sequelize** para ORM y gestión de base de datos
+- Autenticación segura con **JWT**
+- Endpoints RESTful para matchmaking, apuestas, exchange, usuarios, etc.
+- Desplegado en **Fly.io**
+
+**Blockchain y Exchange:**
+- Simulación de exchange y orderbook en el backend
+- Integración con **Solana testnet** para tokens y NFTs
+- Marketplace de NFTs y transferencias de tokens
+
+**Herramientas y extras:**
+- **Swagger** para documentación de API
+- **React Hot Toast** para notificaciones
+- **React Select** para inputs avanzados
+- **Material Tailwind** para componentes UI
+
+**Visuales sugeridas:**
+- Diagrama de arquitectura (Frontend ↔️ Backend ↔️ Blockchain)
+- Logos de React, Node.js, Solana, Tailwind, etc.
+
+**Notas para el presentador:**
+- Explica cómo cada tecnología aporta a la experiencia y seguridad del usuario.
+- Menciona la escalabilidad y facilidad de mantenimiento.
+
+---
+
+## 3. **El Impacto del Euro Digital**
+**Título:**
+🚨 ¿Sabías esto?
+
+**Contenido:**
+"Cuando el **Euro Digital** se lance en 2025, los bancos centrales tendrán control absoluto: podrán **congelar cuentas, rastrear cada compra** e incluso **limitar cuánto puedes ahorrar**."
+
+**Visuales sugeridas:**
+- Símbolo del euro con cadenas o candados
+- Recortes de noticias sobre control de monedas digitales
+
+**Notas para el presentador:**
+- Haz una pausa después de "¿Sabías esto?"
+- Usa un tono de advertencia, mira al público.
+
+---
+
+## 4. **El Lado Oscuro del Euro Digital**
+**Título:**
+⚠️ El Lado Oscuro del Euro Digital
+
+**Puntos clave:**
+- Monitorearán **TODAS tus transacciones** (¿privacidad? olvídalo)
+- **Pueden bloquear tu dinero** si no sigues sus reglas
+- **Caducidad programada**: ¡Tu dinero podría "caducar" para obligarte a gastarlo!
+
+**Visuales sugeridas:**
+- Iconos de cámaras, candados, relojes de cuenta regresiva
+
+**Notas para el presentador:**
+- Tono de advertencia, enfatiza cada punto.
+
+---
+
+## 5. **Transición a la Solución**
+**Título:**
+¿Y si te dijera que hay una forma de evitar esto y ganar dinero jugando?
+
+**Contenido:**
+- "Quizá pienses: '¡Me haré streamer!' Buena idea… pero:
+  1) Necesitas audiencia para ganar dinero (y seamos honestos, la mayoría solo tendría a su mamá viéndolos)
+  2) Incluso los streamers exitosos siguen atrapados en el sistema del Euro Digital – ¡sin verdadera libertad financiera!"
+
+**Visuales sugeridas:**
+- Imagen de un streamer con pocos viewers
+- Iconos de euro digital
+
+**Notas para el presentador:**
+- Tono esperanzador, conecta con la audiencia.
+
+---
+
+## 6. **La Solución: RaCingFi**
+**Título:**
+🏎️ En RaCingFi, ofrecemos una SOLUCIÓN REAL…
+
+**Contenido:**
+"No solo jugamos, construimos verdadera libertad financiera."
+
+**Visuales sugeridas:**
+- Volante de auto, gráficos de crecimiento, tokens
+
+**Notas para el presentador:**
+- Haz un gesto de volante, transmite seguridad.
+
+---
+
+## 7. **¿Qué nos hace únicos?**
+**Título:**
+🔥 ¿Qué nos hace únicos?
+
+**Subsecciones:**
+
+**🚗 Play-to-Earn de Carreras REAL**
+- Cuanto más avanzas, más ganas:
+  - Pistas difíciles = mayores recompensas
+  - Mejores posiciones = NFTs exclusivos (muestra imagen de auto NFT)
+  - **Apuestas PvP**: Reta a otros, el ganador se lleva TODO el pozo
+
+**💎 Marketplace de NFTs Integrado**
+- Compra/vende tus autos NFT ganados
+- **Intercambio instantáneo**: Convierte $RCF → Euros reales en segundos
+
+**🔐 Wallet a prueba de censura**
+- 0 intermediarios – 0 bloqueos – 0 límites
+- Retira a cualquier exchange en cualquier momento
+
+**Visuales sugeridas:**
+- Imagen de auto NFT, gráficos de apuestas, wallet digital
+
+**Notas para el presentador:**
+- Tono de descubrimiento, muestra entusiasmo.
+
+---
+
+## 8. **Comparativa: RaCingFi vs. Axie Infinity**
+**Título:**
+🆚 RaCingFi vs. Axie Infinity
+
+**Tabla:**
+| Axie Infinity | RaCingFi |
+|---------------|----------|
+| ❌ Pay-to-Play (más de $200 para empezar) | ✅ **Free-to-Play** (Empieza GRATIS) |
+| ❌ Economía rota (SLP -95%) | ✅ **Token $RCF con utilidad REAL** |
+| ❌ Jugabilidad repetitiva | ✅ **Apuestas PvP llenas de adrenalina** |
+| ❌ Retiros complicados | ✅ **A Euros en 1 clic** |
+
+**Visuales sugeridas:**
+- Imagen de Axie quemándose, gráfico de caída, auto de RaCingFi subiendo
+
+**Notas para el presentador:**
+- Haz gesto de "quemar dinero" al mencionar Axie.
+
+---
+
+## 9. **Únete a la Revolución**
+**Título:**
+🚀 Únete a la Revolución
+
+**Contenido:**
+"Imagina: **Ganar un NFT de Lambo y venderlo por €5,000 reales**"
+
+**Visuales sugeridas:**
+- Imagen de wallet con saldo de €5,000
+- Botones: Web | Telegram | Whitepaper
+
+**Notas para el presentador:**
+- Cierre épico, mirada intensa.
+
+---
+
+## 10. **Timing sugerido para el pitch (2 minutos)**
+- 0:00-0:25: Impacto del Euro Digital
+- 0:25-0:45: Solución RaCingFi
+- 0:45-1:10: Demo de features (NFTs, apuestas)
+- 1:10-1:35: Comparativa Axie vs. RaCingFi (clímax)
+- 1:35-2:00: Llamado a la acción + caso real
+
+---
+
+## 11. **Motivación del Proyecto**
+**Texto para incluir al final o en slide extra:**
+
+"RaCingFi nace para ofrecer una forma de libertad financiera y de inversión mucho más llamativa y simple para gamers o personas ajenas al mundo de la inversión en criptomonedas. Queremos que cualquiera pueda invertir y ganar, solo por jugar y divertirse."
+
+---
+
+**Fin del documento** 

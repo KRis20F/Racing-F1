@@ -1,10 +1,7 @@
 import { useState } from "react";
-
-interface Order {
-  price: number;
-  amount: number;
-  total: number;
-}
+import { useQuery } from '@tanstack/react-query';
+import type { Order } from '../../../api/endpoints/exchange.endpoints';
+import { exchangeEndpoints } from '../../../api/endpoints/exchange.endpoints';
 
 interface OrderBookProps {
   pair: string;
@@ -13,18 +10,14 @@ interface OrderBookProps {
 const OrderBook = ({ pair }: OrderBookProps) => {
   const [activeTab, setActiveTab] = useState<"all" | "buy" | "sell">("all");
 
-  // Ejemplo de datos
-  const buyOrders: Order[] = [
-    { price: 0.00234, amount: 1250.45, total: 2.92553 },
-    { price: 0.00233, amount: 850.12, total: 1.98078 },
-    { price: 0.00232, amount: 1100.78, total: 2.55381 },
-  ];
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["orderbook", pair],
+    queryFn: () => exchangeEndpoints.getOrderBook(pair),
+    refetchInterval: 3000,
+  });
 
-  const sellOrders: Order[] = [
-    { price: 0.00235, amount: 980.34, total: 2.3038 },
-    { price: 0.00236, amount: 1500.67, total: 3.54158 },
-    { price: 0.00237, amount: 750.23, total: 1.77805 },
-  ];
+  const buyOrders: Order[] = data?.buy || [];
+  const sellOrders: Order[] = data?.sell || [];
 
   return (
     <div className="h-full flex flex-col">
@@ -71,17 +64,20 @@ const OrderBook = ({ pair }: OrderBookProps) => {
           <div>Total</div>
         </div>
 
+        {isLoading && <div className="text-center text-gray-400 py-4">Loading...</div>}
+        {error && <div className="text-center text-red-400 py-4">Error loading orderbook</div>}
+
         <div className="overflow-y-auto h-[calc(100%-40px)]">
           {(activeTab === "all" || activeTab === "sell") && (
             <div className="space-y-1">
-              {sellOrders.map((order, index) => (
+              {sellOrders.map((order) => (
                 <div
-                  key={index}
+                  key={order.id}
                   className="grid grid-cols-3 gap-4 px-4 py-2 text-sm hover:bg-[rgba(255,255,255,0.05)]"
                 >
-                  <div className="text-red-500">{order.price.toFixed(5)}</div>
-                  <div>{order.amount.toFixed(2)}</div>
-                  <div>{order.total.toFixed(5)}</div>
+                  <div className="text-red-500">{Number(order.price).toFixed(5)}</div>
+                  <div>{Number(order.amount).toFixed(2)}</div>
+                  <div>{(Number(order.price) * Number(order.amount)).toFixed(5)}</div>
                 </div>
               ))}
             </div>
@@ -89,20 +85,20 @@ const OrderBook = ({ pair }: OrderBookProps) => {
 
           {activeTab === "all" && (
             <div className="border-y border-[rgba(255,255,255,0.1)] my-2 py-2 px-4">
-              <div className="text-lg font-semibold">0.00234 USDT</div>
+              <div className="text-lg font-semibold">-</div>
             </div>
           )}
 
           {(activeTab === "all" || activeTab === "buy") && (
             <div className="space-y-1">
-              {buyOrders.map((order, index) => (
+              {buyOrders.map((order) => (
                 <div
-                  key={index}
+                  key={order.id}
                   className="grid grid-cols-3 gap-4 px-4 py-2 text-sm hover:bg-[rgba(255,255,255,0.05)]"
                 >
-                  <div className="text-green-500">{order.price.toFixed(5)}</div>
-                  <div>{order.amount.toFixed(2)}</div>
-                  <div>{order.total.toFixed(5)}</div>
+                  <div className="text-green-500">{Number(order.price).toFixed(5)}</div>
+                  <div>{Number(order.amount).toFixed(2)}</div>
+                  <div>{(Number(order.price) * Number(order.amount)).toFixed(5)}</div>
                 </div>
               ))}
             </div>

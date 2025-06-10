@@ -49,16 +49,9 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true
     },
-    rollupOptions: {
-      external: ['buffer'],
-      output: {
-        globals: {
-          buffer: 'Buffer'
-        }
-      }
-    }
+    // rollupOptions: {} // Puedes dejarlo vacío o eliminarlo
   },
   esbuild: {
     jsxInject: `import React from 'react'`
-  }
+  },
 })

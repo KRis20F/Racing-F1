@@ -1,7 +1,9 @@
-import { ReactNode, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import type { ReactNode } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../../assets/svg/guci.svg";
 import { BASE_PATH } from "../../providers/AuthContext";
+import { useAuthContext } from '../../providers/hooks/useAuthContext';
 
 interface NavbarProps {
   children?: ReactNode;
@@ -9,7 +11,27 @@ interface NavbarProps {
 
 export default function Navbar({ children }: NavbarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, userData, logout } = useAuthContext();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Solo aplicar efecto en el index
+  const isHome = location.pathname === "/";
+
+  useEffect(() => {
+    if (!isHome) return;
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 60);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isHome]);
+
+  // Clases para el fondo del navbar
+  const navBgClass = isHome
+    ? (scrolled ? 'bg-black/10 backdrop-blur-lg border border-white/20' : 'bg-transparent border-transparent backdrop-blur-0')
+    : 'bg-black/10 backdrop-blur-lg border border-white/20';
 
   const ROUTES = [
     {
@@ -73,7 +95,9 @@ export default function Navbar({ children }: NavbarProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <nav className="bg-black/10 backdrop-blur-lg fixed w-[97%] mx-auto left-0 right-0 top-5 rounded-[42px] z-50 border border-white/20">
+      <nav
+        className={`fixed w-[97%] mx-auto left-0 right-0 top-5 rounded-[42px] z-50 transition-all duration-500 ${navBgClass}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div
             className={`flex items-center ${
@@ -93,7 +117,7 @@ export default function Navbar({ children }: NavbarProps) {
                   <button
                     key={route.path}
                     onClick={() => navigate(route.path)}
-                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    className="px-4 py-2 cursor-pointer text-sm font-medium text-gray-300 hover:text-white transition-colors"
                   >
                     {route.name}
                   </button>
@@ -102,15 +126,48 @@ export default function Navbar({ children }: NavbarProps) {
             </div>
 
             <div className="hidden md:flex items-center space-x-4">
-              {authRoutes.map((route) => (
-                <button
-                  key={route.path}
-                  onClick={() => navigate(route.path)}
-                  className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                >
-                  {route.name}
-                </button>
-              ))}
+              {isAuthenticated ? (
+                <>
+                  {/* Avatar del usuario */}
+                  <button
+                    onClick={() => navigate(`${BASE_PATH}/dashboard/profile`)}
+                    className="flex items-center focus:outline-none"
+                    title={userData?.profile?.username || 'Perfil'}
+                  >
+                    {userData?.profile?.avatar ? (
+                      <img
+                        src={userData.profile.avatar}
+                        alt="Avatar"
+                        className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                      />
+                    ) : (
+                      <svg className="w-10 h-10 rounded-full bg-gray-300 text-gray-600 p-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    )}
+                  </button>
+                  {/* Icono de logout */}
+                  <button
+                    onClick={logout}
+                    className="ml-2 p-2 rounded-full hover:bg-red-100 transition-colors"
+                    title="Cerrar sesión"
+                  >
+                    <svg className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </>
+              ) : (
+                authRoutes.map((route) => (
+                  <button
+                    key={route.path}
+                    onClick={() => navigate(route.path)}
+                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                  >
+                    {route.name}
+                  </button>
+                ))
+              )}
             </div>
 
             <button

@@ -54,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      
+
       // Limpiar estado de React Query
       await queryClient.cancelQueries();
       queryClient.clear();

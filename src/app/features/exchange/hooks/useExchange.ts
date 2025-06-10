@@ -1,23 +1,24 @@
 import { useMutation } from '@tanstack/react-query';
-import { exchangeService } from '../../../services/exchangeService';
+import { exchangeEndpoints } from '../../../api/endpoints/exchange.endpoints';
 import type {
   ExchangeRequest,
   ExchangeResponse,
   TokenTransferRequest,
-  NFTTransferRequest
+  NFTTransferRequest,
+  NFTTransferResponse
 } from '../../../api/endpoints/exchange.endpoints';
 
 export const useExchange = () => {
   const exchangeTokenMutation = useMutation<ExchangeResponse, Error, ExchangeRequest>({
-    mutationFn: exchangeService.exchangeToken
+    mutationFn: exchangeEndpoints.exchangeToken
   });
 
   const transferTokenMutation = useMutation<void, Error, TokenTransferRequest>({
-    mutationFn: exchangeService.transferToken
+    mutationFn: exchangeEndpoints.transferToken
   });
 
-  const transferNFTMutation = useMutation<void, Error, NFTTransferRequest>({
-    mutationFn: exchangeService.transferNFT
+  const transferNFTMutation = useMutation<NFTTransferResponse, Error, NFTTransferRequest>({
+    mutationFn: exchangeEndpoints.transferNFT
   });
 
   return {

@@ -36,7 +36,7 @@ const formatPublicKey = (publicKey: string, isVisible: boolean): string => {
   return groups.join(' ');
 };
 
-const WalletCard: FC<WalletCardProps> = ({ publicKey, balance, onClick }) => {
+const WalletCard: FC<WalletCardProps> = ({ publicKey, onClick }) => {
   const [isVisible, setIsVisible] = useState(false);
   const currentDate = new Date();
   const expiryDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getFullYear() + 3).slice(-2)}`;
@@ -71,7 +71,7 @@ const WalletCard: FC<WalletCardProps> = ({ publicKey, balance, onClick }) => {
   return (
     <div 
       onClick={onClick}
-      className="relative w-full h-64 rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg p-6"
+      className="relative w-full h-72 rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg p-6"
     >
       {/* Gradient Background */}
       <div className="absolute inset-0 bg-[#0f1535] bg-opacity-90">
@@ -81,7 +81,7 @@ const WalletCard: FC<WalletCardProps> = ({ publicKey, balance, onClick }) => {
       {/* Card Content */}
       <div className="relative z-10 h-full flex flex-col justify-between text-white">
         <div className="flex justify-between items-start">
-          <span className="text-xl font-medium">Vision UI</span>
+          <span className="text-xl font-medium">Racing F1</span>
           <div className="flex items-center gap-4">
             <button
               onClick={toggleVisibility}

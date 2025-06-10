@@ -34,6 +34,35 @@ export interface NFTTransferResponse {
   message: string;
 }
 
+export interface Order {
+  id: number;
+  user_id: number;
+  side: 'buy' | 'sell';
+  type: 'limit' | 'market';
+  price: string | null;
+  amount: string;
+  filled_amount: string;
+  status: string;
+  pair: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrderBookResponse {
+  buy: Order[];
+  sell: Order[];
+}
+
+export interface RecentTrade {
+  id: number;
+  side: string;
+  price: string;
+  amount: string;
+  timestamp: string;
+  from: string;
+  to: string;
+}
+
 export const exchangeEndpoints = {
   exchangeToken: async (data: ExchangeRequest): Promise<ExchangeResponse> => {
     const response = await api.post<ExchangeResponse>('/api/exchange/token', data);
@@ -46,6 +75,16 @@ export const exchangeEndpoints = {
 
   transferNFT: async (data: NFTTransferRequest): Promise<NFTTransferResponse> => {
     const response = await api.post('/api/exchange/nft', data);
+    return response.data;
+  },
+
+  getOrderBook: async (pair: string): Promise<OrderBookResponse> => {
+    const response = await api.get<OrderBookResponse>(`/api/exchange/orderbook?pair=${encodeURIComponent(pair)}`);
+    return response.data;
+  },
+
+  getRecentTrades: async (pair: string, limit = 5): Promise<RecentTrade[]> => {
+    const response = await api.get<RecentTrade[]>(`/api/exchange/recent-trades?pair=${encodeURIComponent(pair)}&limit=${limit}`);
     return response.data;
   }
 }; 

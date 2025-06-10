@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRace } from "../../hooks/useRace";
 import { toast } from "react-hot-toast";
 import type { BetRequest } from "../../api/endpoints/race.endpoints";
+import Navbar from "../../UI/Navbar";
+import { useMatchmaking } from '../../hooks/useMatchmaking';
 
 interface SimpleBetData {
   playerId: number;
@@ -13,6 +15,9 @@ interface SimpleBetData {
 const Game = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isBetting, setIsBetting] = useState(false);
+  const matchmaking = useMatchmaking();
+  const [rivalId, setRivalId] = useState<number | null>(null);
+  const [playerNumber, setPlayerNumber] = useState<number | null>(null);
 
   const {
     createBet,
@@ -20,6 +25,18 @@ const Game = () => {
     createBetError,
     submitResultError
   } = useRace();
+
+  useEffect(() => {
+    if (matchmaking.data) {
+      console.log('[FRONT] Matchmaking data:', matchmaking.data);
+      if (matchmaking.data.status === 'matched') {
+        setRivalId(matchmaking.data.rivalId ?? null);
+        setPlayerNumber(matchmaking.data.player);
+      } else if (matchmaking.data.status === 'waiting') {
+        setPlayerNumber(matchmaking.data.player);
+      }
+    }
+  }, [matchmaking.data]);
 
   useEffect(() => {
     // Simulate loading time
@@ -59,65 +76,94 @@ const Game = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-indigo-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-indigo-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r pt-36 from-gray-900 to-gray-800 text-white">
-      {/* Racing-themed header */}
-      <div className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 shadow-lg">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-white flex items-center gap-4 animate-fade-in">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            F1 Racing Challenge
-          </h1>
+    <>
+      <Navbar >
+      <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-indigo-900 flex flex-col items-center justify-start pt-36 pb-10 overflow-x-hidden">
+        {/* HERO HEADER */}
+        <div className="w-full flex flex-col items-center mb-10">
+          <h1 className="text-5xl md:text-6xl font-black text-white drop-shadow-lg bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-600 bg-clip-text ">F1 Racing Challenge</h1>
+          <p className="mt-4 text-xl md:text-2xl text-indigo-200 font-semibold">¡Compite, apuesta y lidera la pista!</p>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Game Window */}
-          <div className="lg:col-span-2">
-            <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
-              <div className="w-full h-[700px] relative">
-                <iframe 
-                  src="https://itch.io/embed-upload/13934810?color=2D1B69"
-                  allowFullScreen 
-                  width="100%" 
-                  height="100%"
-                  frameBorder="0"
-                  className="absolute top-0 left-0 w-full h-full"
-                  title="Play RacingFi"
-                ></iframe>
+        {/* DEBUG: Estado de matchmaking */}
+        {process.env.NODE_ENV !== 'production' && (
+          <pre className="text-xs text-white bg-black/50 p-2 rounded mt-2 max-w-xl overflow-x-auto">
+            {JSON.stringify(matchmaking.data, null, 2)}
+          </pre>
+        )}
+        {/* MATCHMAKING STATUS */}
+        {matchmaking.isPending && (
+          <div className="text-indigo-200 text-xl font-semibold mb-8">Buscando partida...</div>
+        )}
+        {playerNumber === 1 && !rivalId && (
+          <div className="text-indigo-200 text-xl font-semibold mb-8">Esperando a otro jugador...</div>
+        )}
+        {/* GAME WINDOW Y PANELES SOLO SI HAY MATCH */}
+        {rivalId && (
+          <div className="relative w-full flex justify-center items-center">
+            <div className="w-full max-w-5xl aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-indigo-500">
+              <iframe
+                src="https://itch.io/embed-upload/13934810?color=2D1B69"
+                allowFullScreen
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                className="w-full h-full min-h-[400px] bg-black"
+                title="Play RacingFi"
+              ></iframe>
+            </div>
+            {/* BETTING PANEL OVERLAY */}
+            <div className="hidden md:block absolute right-[-60px] bottom-[-40px] z-20">
+              <div className="rounded-2xl bg-white/10 backdrop-blur-lg border-2 border-fuchsia-500/60 shadow-xl p-6 w-80 flex flex-col items-center">
+                <h2 className="text-xl font-bold text-fuchsia-200 mb-4">Apuesta Rápida</h2>
+                <BettingPanel
+                  onBetSubmit={handleBetSubmit}
+                  isLoading={isCreatingBet}
+                  isBetting={isBetting}
+                />
+              </div>
+            </div>
+            {/* LEADERBOARD OVERLAY */}
+            <div className="hidden md:block absolute left-[-60px] bottom-[-40px] z-20">
+              <div className="rounded-2xl bg-white/10 backdrop-blur-lg border-2 border-indigo-500/60 shadow-xl p-6 w-80 flex flex-col items-center">
+                <h2 className="text-xl font-bold text-indigo-200 mb-4 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" /></svg>
+                  Leaderboard
+                </h2>
+                <Leaderboard />
               </div>
             </div>
           </div>
-
-          {/* Betting Panel */}
-          <div>
-            <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
-              <BettingPanel 
+        )}
+        {/* MOBILE PANELS (STACKED BELOW GAME) */}
+        {rivalId && (
+          <div className="w-full flex flex-col gap-6 mt-10 md:hidden">
+            <div className="rounded-2xl bg-white/10 backdrop-blur-lg border-2 border-fuchsia-500/60 shadow-xl p-6 w-full max-w-md mx-auto flex flex-col items-center">
+              <h2 className="text-xl font-bold text-fuchsia-200 mb-4">Apuesta Rápida</h2>
+              <BettingPanel
                 onBetSubmit={handleBetSubmit}
                 isLoading={isCreatingBet}
                 isBetting={isBetting}
               />
             </div>
-          </div>
-
-          {/* Leaderboard */}
-          <div className="lg:col-span-3">
-            <div className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+            <div className="rounded-2xl bg-white/10 backdrop-blur-lg border-2 border-indigo-500/60 shadow-xl p-6 w-full max-w-md mx-auto flex flex-col items-center">
+              <h2 className="text-xl font-bold text-indigo-200 mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" /></svg>
+                Leaderboard
+              </h2>
               <Leaderboard />
             </div>
           </div>
-        </div>
+        )}
       </div>
-    </div>
+      </Navbar>
+    </>
   );
 };
 

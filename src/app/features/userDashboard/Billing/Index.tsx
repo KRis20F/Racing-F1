@@ -185,7 +185,7 @@ const Billing = () => {
           </div>
 
           {/* Invoices */}
-          <div className="col-span-4 row-span-5 bg-[#111c44] rounded-2xl p-6">
+          <div className="col-span-4 row-span-5 bg-[#111c44] h-[598px] rounded-2xl p-6">
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-medium">Facturas</h3>
@@ -230,14 +230,14 @@ const Billing = () => {
                     ))}
                   </div>
                 ) : (
-                  <EmptyInvoices />
+                <EmptyInvoices />
                 )}
               </div>
             </div>
           </div>
 
           {/* Payment Method Section */}
-          <div className="col-span-4 row-span-3 bg-[#111c44] rounded-2xl p-6">
+          <div className="col-span-4 row-span-3 bg-[#111c44] w-3xl rounded-2xl p-6">
             <div className="h-full flex flex-col">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-medium">Método de Pago</h3>
@@ -264,7 +264,7 @@ const Billing = () => {
           </div>
 
           {/* Transactions Section */}
-          <div className="col-span-8">
+          <div className="col-span-8 w-[1187px]">
             <div className="bg-[#111C44] rounded-2xl p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-medium">Transacciones Recientes</h3>
@@ -296,7 +296,7 @@ const Billing = () => {
                   ))}
                 </div>
               ) : (
-                <EmptyTransactions />
+              <EmptyTransactions />
               )}
             </div>
           </div>

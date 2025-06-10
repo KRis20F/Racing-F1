@@ -39,6 +39,14 @@ export interface RaceResultResponse {
   timestamp: string;
 }
 
+export interface MatchmakingResponse {
+  status: 'waiting' | 'matched';
+  message: string;
+  player: number;
+  rivalId?: number;
+  you?: number;
+}
+
 export const raceEndpoints = {
   createBet: async (betData: BetRequest): Promise<BetResponse> => {
     const response = await api.post<BetResponse>('/bet/create', betData);
@@ -47,6 +55,11 @@ export const raceEndpoints = {
 
   submitRaceResult: async (resultData: RaceResultRequest): Promise<RaceResultResponse> => {
     const response = await api.post<RaceResultResponse>('/race/result', resultData);
+    return response.data;
+  },
+
+  joinMatchmaking: async (): Promise<MatchmakingResponse> => {
+    const response = await api.post<MatchmakingResponse>('/api/race/matchmaking/join');
     return response.data;
   }
 }; 

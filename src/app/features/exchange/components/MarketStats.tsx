@@ -1,75 +1,101 @@
+import { useQuery } from '@tanstack/react-query';
+import { exchangeEndpoints } from '../../../api/endpoints/exchange.endpoints';
+
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 interface MarketStatsProps {
   pair: string;
 }
 
-const MarketStats: React.FC<MarketStatsProps> = ({ pair }) => {
+const SUPPLY = 25000000; // 25M RACE
+const USD_PER_ETH = 2000; // Simulación
+
+const MarketStats = ({ pair }: MarketStatsProps) => {
+  // Price history
+  const { data: priceHistory } = useQuery({
+    queryKey: ['price-history'],
+    queryFn: () => fetch(API_URL + '/api/dashboard/token/price-history').then(res => res.json() as Promise<{ price: number }[]>),
+  });
+
+  // Recent trades
+  const { data: recentTrades } = useQuery({
+    queryKey: ['recent-trades', pair],
+    queryFn: () => exchangeEndpoints.getRecentTrades(pair, 5),
+    refetchInterval: 3000,
+  });
+
+  // Procesar stats
+  const prices = priceHistory?.map((p) => p.price) || [];
+  const high = prices.length ? Math.max(...prices) : 0;
+  const low = prices.length ? Math.min(...prices) : 0;
+  const last = prices[prices.length - 1] || 0;
+  const first = prices[0] || 0;
+  const change = first ? ((last - first) / first) * 100 : 0;
+  const volume = 1234.56; // Simulado
+  const marketCap = last * SUPPLY;
+
   return (
-    <div className="w-full p-6 bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white">Market Stats</h2>
-        <p className="text-sm text-green-500 font-semibold">
-          Last updated: Just now
-        </p>
+    <div className="h-full flex flex-col">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold">Market Stats</h3>
+        <span className="text-green-400 text-xs">Last updated: Just now</span>
       </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/5 rounded-xl p-4">
-          <p className="text-gray-400 text-sm mb-1">24h High</p>
-          <p className="text-green-400 text-xl font-semibold">0.00245 ETH</p>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="bg-white/5 rounded-xl p-4 flex flex-col items-center">
+          <div className="text-xs text-gray-400">24h High</div>
+          <div className="text-green-400 text-lg font-bold">{high.toFixed(5)} ETH</div>
         </div>
-        <div className="bg-white/5 rounded-xl p-4">
-          <p className="text-gray-400 text-sm mb-1">24h Low</p>
-          <p className="text-red-400 text-xl font-semibold">0.00225 ETH</p>
+        <div className="bg-white/5 rounded-xl p-4 flex flex-col items-center">
+          <div className="text-xs text-gray-400">24h Low</div>
+          <div className="text-red-400 text-lg font-bold">{low.toFixed(5)} ETH</div>
         </div>
-        <div className="bg-white/5 rounded-xl p-4">
-          <p className="text-gray-400 text-sm mb-1">24h Volume</p>
-          <p className="text-white text-xl font-semibold">1,234.56 ETH</p>
-          <p className="text-gray-400 text-sm">≈ $2,469,120</p>
+        <div className="bg-white/5 rounded-xl p-4 flex flex-col items-center">
+          <div className="text-xs text-gray-400">24h Volume</div>
+          <div className="text-white text-lg font-bold">{volume.toLocaleString()} ETH</div>
+          <div className="text-xs text-gray-400">≈ ${(volume * USD_PER_ETH).toLocaleString()}</div>
         </div>
-        <div className="bg-white/5 rounded-xl p-4">
-          <p className="text-gray-400 text-sm mb-1">Market Cap</p>
-          <p className="text-white text-xl font-semibold">25M RACE</p>
-          <p className="text-gray-400 text-sm">≈ $50,000,000</p>
+        <div className="bg-white/5 rounded-xl p-4 flex flex-col items-center">
+          <div className="text-xs text-gray-400">Market Cap</div>
+          <div className="text-white text-lg font-bold">{SUPPLY.toLocaleString()} RACE</div>
+          <div className="text-xs text-gray-400">≈ ${(marketCap * USD_PER_ETH).toLocaleString()}</div>
         </div>
       </div>
-
-      <div className="mt-6 space-y-4">
-        <div className="bg-white/5 rounded-xl p-4">
-          <div className="flex justify-between items-center mb-2">
-            <p className="text-gray-400 text-sm">Price Change (24h)</p>
-            <p className="text-green-500 text-sm font-semibold">+5.67%</p>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-2">
+      <div className="mb-4">
+        <div className="text-xs text-gray-400 mb-1">Price Change (24h)</div>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="bg-green-500 h-2 rounded-full"
-              style={{ width: "65%" }}
+              className={`h-2 ${change >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+              style={{ width: `${Math.min(Math.abs(change), 100)}%` }}
             ></div>
           </div>
+          <span className={`text-sm font-bold ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>{change >= 0 ? '+' : ''}{change.toFixed(2)}%</span>
         </div>
-
-        <div className="bg-white/5 rounded-xl p-4">
-          <p className="text-gray-400 text-sm mb-2">Recent Trades</p>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-green-500">Buy</span>
-              <span className="text-white">0.00234 ETH</span>
-              <span className="text-gray-400 text-sm">1 min ago</span>
+      </div>
+      <div className="bg-white/5 rounded-xl p-4 mt-2">
+        <div className="text-xs text-gray-400 mb-2">Recent Trades</div>
+        <div className="space-y-1">
+          {recentTrades?.map(trade => (
+            <div key={trade.id} className="flex items-center justify-between text-sm">
+              <span className={trade.side === 'buy' ? 'text-green-500' : 'text-red-500'}>{trade.side.charAt(0).toUpperCase() + trade.side.slice(1)}</span>
+              <span className="font-mono">{Number(trade.price).toFixed(5)} ETH</span>
+              <span className="text-gray-400 text-xs">{timeAgo(trade.timestamp)}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-red-500">Sell</span>
-              <span className="text-white">0.00236 ETH</span>
-              <span className="text-gray-400 text-sm">3 min ago</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-green-500">Buy</span>
-              <span className="text-white">0.00233 ETH</span>
-              <span className="text-gray-400 text-sm">5 min ago</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
+
+function timeAgo(dateString: string) {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (diff < 60) return `${diff} sec ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} h ago`;
+  return date.toLocaleDateString();
+}
 
 export default MarketStats;

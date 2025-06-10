@@ -31,7 +31,6 @@ function ErrorMessage({ message }: { message: string }) {
 
 export function CarModel({ car }: ModelProps) {
   const modelRef = useRef<THREE.Group>();
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Asegurarnos de que la ruta del modelo es correcta
@@ -39,18 +38,9 @@ export function CarModel({ car }: ModelProps) {
     ? car.modelPath 
     : `${API_URL}/models3d/${car.modelPath.split('/').pop()}`;
 
-  console.log('Loading model from:', modelPath); // Para debugging
-  
-  let gltf;
-  try {
-    gltf = useGLTF(modelPath);
-  } catch (err) {
-    console.error('Error loading model:', err);
-    return <ErrorMessage message="Error al cargar el modelo" />;
-  }
-  
-  const { scene } = gltf;
-  
+  // Hook SIEMPRE al tope
+  const { scene } = useGLTF(modelPath);
+
   // Memoize the model transformations
   const modelScene = useMemo(() => {
     try {
@@ -89,8 +79,7 @@ export function CarModel({ car }: ModelProps) {
       setIsLoading(false);
       return clonedScene;
     } catch (err) {
-      console.error('Error processing model:', err);
-      setError('Error al procesar el modelo');
+      // Si hay error aquí, lo manejará el ErrorBoundary externo
       setIsLoading(false);
       return null;
     }
@@ -119,7 +108,6 @@ export function CarModel({ car }: ModelProps) {
   }, [modelScene]);
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage message={error} />;
   if (!modelScene) return <ErrorMessage message="No se pudo cargar el modelo" />;
 
   return (

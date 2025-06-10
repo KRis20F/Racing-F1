@@ -35,7 +35,7 @@ const AuthRoute = () => {
   }
 
   return <AuthForm />;
-};
+  };
 
 const AppRoutes = () => {
   return (
@@ -47,21 +47,21 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       <Route path={BASE_PATH} element={<Navigate to="/" replace />} />
-      
+
       {/* Rutas de autenticación */}
       <Route path={`${BASE_PATH}/auth`} element={<AuthRoute />} />
 
       {/* Rutas del dashboard */}
       <Route path={`${BASE_PATH}/dashboard`} element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
       }>
         <Route path="profile" element={<Profile />} />
         <Route path="garage" element={<Garage />} />
         <Route path="billing" element={<Billing />} />
       </Route>
-      
+
       <Route path={`${BASE_PATH}/game`} element={
         <ProtectedRoute>
           <Game />
@@ -69,15 +69,15 @@ const AppRoutes = () => {
       } />
 
       <Route path={`${BASE_PATH}/exchange`} element={
-        <ProtectedRoute>
-          <Exchange />
-        </ProtectedRoute>
+            <ProtectedRoute>
+              <Exchange />
+            </ProtectedRoute>
       } />
 
       <Route path={`${BASE_PATH}/shop`} element={
-        <ProtectedRoute>
+            <ProtectedRoute>
           <ShopV2 />
-        </ProtectedRoute>
+            </ProtectedRoute>
       } />
 
       {/* Ruta 404 */}

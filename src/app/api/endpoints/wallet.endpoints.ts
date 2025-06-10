@@ -40,6 +40,15 @@ export interface TokenBalanceResponse {
   tokenSymbol: string;
 }
 
+export interface Wallet {
+  id: number;
+  userId: number;
+  address: string;
+  balance: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export const walletEndpoints = {
   createWallet: async (): Promise<WalletResponse> => {
     try {
@@ -205,5 +214,24 @@ export const walletEndpoints = {
         sol: 0
       };
     }
+  },
+
+  listWallets: async (): Promise<Wallet[]> => {
+    const response = await api.get<Wallet[]>('/api/wallet');
+    return response.data;
+  },
+
+  createWallet: async (wallet: { address: string; balance?: number }): Promise<Wallet> => {
+    const response = await api.post<Wallet>('/api/wallet', wallet);
+    return response.data;
+  },
+
+  updateWallet: async (id: number, wallet: { address?: string; balance?: number }): Promise<Wallet> => {
+    const response = await api.put<{ wallet: Wallet }>(`/api/wallet/${id}`, wallet);
+    return response.data.wallet;
+  },
+
+  deleteWallet: async (id: number): Promise<void> => {
+    await api.delete(`/api/wallet/${id}`);
   }
 }; 

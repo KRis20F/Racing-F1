@@ -60,7 +60,7 @@ const CreditBalanceCard: FC<CreditBalanceCardProps> = ({
                 ${(Number(balance) * 13).toLocaleString()}
               </div>
               <div className="text-sm text-gray-400">
-                {Number(balance).toLocaleString()} RCT
+                {Number(balance).toLocaleString(undefined, { maximumFractionDigits: 3 })} RCT
               </div>
             </div>
             <div className="flex items-center gap-4">

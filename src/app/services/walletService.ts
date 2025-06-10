@@ -3,7 +3,8 @@ import type {
   WalletResponse,
   TokenAccountResponse,
   TransferResponse,
-  TokenBalanceResponse
+  TokenBalanceResponse,
+  Wallet
 } from '../api/endpoints/wallet.endpoints';
 import { dashboardEndpoints } from '../api/endpoints/dashboard.endpoints';
 import type { UserData } from '../api/endpoints/dashboard.endpoints';
@@ -68,5 +69,21 @@ export const walletService = {
       console.log('❌ Error al obtener balance:', error?.response?.data || error);
       throw error;
     }
+  },
+
+  listWallets: async (): Promise<Wallet[]> => {
+    return await walletEndpoints.listWallets();
+  },
+
+  createWallet: async (wallet: { address: string; balance?: number }): Promise<Wallet> => {
+    return await walletEndpoints.createWallet(wallet);
+  },
+
+  updateWallet: async (id: number, wallet: { address?: string; balance?: number }): Promise<Wallet> => {
+    return await walletEndpoints.updateWallet(id, wallet);
+  },
+
+  deleteWallet: async (id: number): Promise<void> => {
+    return await walletEndpoints.deleteWallet(id);
   }
 }; 
