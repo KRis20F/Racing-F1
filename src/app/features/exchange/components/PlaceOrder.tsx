@@ -6,7 +6,7 @@ import { useUserData } from '../../../hooks/useUserData';
 import UserSearchInput from '../../../UI/UserSearchInput';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api/api.config';
-import { exchangeEndpoints, type TokenTransferRequest } from "@/app/api/endpoints/exchange.endpoints";
+import { exchangeEndpoints, type CreateOrderRequest, type TokenTransferRequest } from "@/app/api/endpoints/exchange.endpoints";
 
 interface PlaceOrderProps {
   pair: string;
@@ -63,15 +63,31 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
 
 
   // Manejo de order:
-  const buyOrder = () => {
+  const buyOrder = async () => {
     
-    console.log(section)
-    console.log(orderType)
-    console.log(side)
-    console.log(price)
-    console.log(amount)
+    if(!price || !amount) {
+      console.error("Rellena todos los inputs para continuar!")
+      return;
+    }
 
 
+
+    const body: CreateOrderRequest = {
+      side,
+      type: orderType,
+      price,
+      amount,
+      pair
+    }
+
+    console.log(body);
+
+    try {
+      await exchangeEndpoints.createOrder(body)
+      console.log("Orden exitosa")
+    } catch (error) {
+      console.error("Error al crear orden", error)
+    }
 
 
   }
