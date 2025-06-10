@@ -1,12 +1,13 @@
 import { useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 // import { Html } from "@react-three/drei"; // Eliminado porque no se usa
-import { CarModel } from '../../userDashboard/components/CarModel';
+import { CarModel } from '../../../UI/CarModel';
 import { useUserData } from '../../../hooks/useUserData';
 import UserSearchInput from '../../../UI/UserSearchInput';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api/api.config';
 import { exchangeEndpoints, type CreateOrderRequest, type TokenTransferRequest } from "@/app/api/endpoints/exchange.endpoints";
+import type { Car } from '../../../types/api/auth.types';
 
 interface PlaceOrderProps {
   pair: string;
@@ -32,16 +33,14 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
   const [transferTo, setTransferTo] = useState<null | { value: string; label: string; avatarUrl?: string }>(null);
   const [transferAmount, setTransferAmount] = useState("");
   const { profile } = useUserData();
-  const cars = profile?.cars || [];
+  const cars: Car[] = profile?.cars || [];
   const [selectedCar, setSelectedCar] = useState(0);
   const { data: users } = useExchangeUsers();
 
-
-
-  // Convertir usuarios a opciones para el UserSearchInput, excluyendo al usuario actual
+  interface ExchangeUser { id: string; username: string; avatar?: string; }
   const userOptions = (users || [])
-    .filter((u: { id: any }) => String(u.id) !== String(profile?.id))
-    .map((u: { id: string; username: string; avatar?: string }) => ({
+    .filter((u: ExchangeUser) => String(u.id) !== String(profile?.id))
+    .map((u: ExchangeUser) => ({
       value: u.id,
       label: u.username,
       avatarUrl: u.avatar || undefined
@@ -378,7 +377,12 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
                             <ambientLight intensity={1.2} />
                             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1.5} />
                             <pointLight position={[-10, -10, -10]} intensity={0.8} />
-                            <CarModel car={cars[selectedCar]} />
+                            <CarModel 
+                              modelPath={cars[selectedCar].modelPath}
+                              scale={cars[selectedCar].scale}
+                              position={cars[selectedCar].position}
+                              rotation={cars[selectedCar].rotation}
+                            />
                           </Canvas>
                         </Suspense>
                       </div>
