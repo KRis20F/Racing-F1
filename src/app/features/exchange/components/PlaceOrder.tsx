@@ -35,9 +35,12 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
   const [selectedCar, setSelectedCar] = useState(0);
   const { data: users } = useExchangeUsers();
 
+  // Debug: mostrar ids para depuración
+  console.log('profile.id:', profile?.id, 'user ids:', (users || []).map((u: { id: any }) => u.id));
+
   // Convertir usuarios a opciones para el UserSearchInput, excluyendo al usuario actual
   const userOptions = (users || [])
-    .filter((u: { id: string | number }) => u.id !== String(profile?.id))
+    .filter((u: { id: any }) => String(u.id) !== String(profile?.id))
     .map((u: { id: string; username: string; avatar?: string }) => ({
       value: u.id,
       label: u.username,
