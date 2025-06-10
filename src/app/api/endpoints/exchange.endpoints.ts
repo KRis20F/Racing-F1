@@ -63,6 +63,18 @@ export interface RecentTrade {
   to: string;
 }
 
+export interface CreateOrderRequest {
+  side: 'buy' | 'sell';
+  type: 'limit' | 'market';
+  price?: string;
+  amount: string;
+  pair: string;
+}
+
+export interface CancelOrderRequest {
+  orderId: number;
+}
+
 export const exchangeEndpoints = {
   exchangeToken: async (data: ExchangeRequest): Promise<ExchangeResponse> => {
     const response = await api.post<ExchangeResponse>('/api/exchange/token', data);
@@ -85,6 +97,16 @@ export const exchangeEndpoints = {
 
   getRecentTrades: async (pair: string, limit = 5): Promise<RecentTrade[]> => {
     const response = await api.get<RecentTrade[]>(`/api/exchange/recent-trades?pair=${encodeURIComponent(pair)}&limit=${limit}`);
+    return response.data;
+  },
+
+  createOrder: async (data: CreateOrderRequest): Promise<Order> => {
+    const response = await api.post<Order>('/api/exchange/order', data);
+    return response.data;
+  },
+
+  cancelOrder: async (orderId: number): Promise<{ status: string; order: Order }> => {
+    const response = await api.post<{ status: string; order: Order }>('/api/exchange/order/cancel', { orderId });
     return response.data;
   }
 }; 

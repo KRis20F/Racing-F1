@@ -9,14 +9,14 @@ interface UserOption {
 }
 
 interface UserSearchInputProps {
-  value: string | string[] | null | number;
+  value: UserOption | null;
   options: UserOption[];
   label?: string;
   name: string;
   isMulti?: boolean;
   required?: boolean;
   errors: Record<string, string>;
-  setFieldValue: (field: string, value: string | string[] | null) => void;
+  setFieldValue: (option: UserOption | null) => void;
   handleBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
 }
 
@@ -39,7 +39,7 @@ const UserSearchInput: React.FC<UserSearchInputProps> = ({
     name={name}
     required={required}
     errors={errors}
-    setFieldValue={setFieldValue}
+    onChange={setFieldValue}
     handleBlur={handleBlur}
     touched={{}}
   />

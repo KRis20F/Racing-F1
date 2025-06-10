@@ -11,7 +11,6 @@ interface PlaceOrderProps {
   pair: string;
 }
 
-// Hook para obtener usuarios para el exchange
 const useExchangeUsers = () => {
   return useQuery({
     queryKey: ['exchange-users'],
@@ -29,19 +28,21 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
   const [price, setPrice] = useState("");
   const [amount, setAmount] = useState("");
   const [transferType, setTransferType] = useState<'token' | 'nft'>('token');
-  const [transferTo, setTransferTo] = useState("");
+  const [transferTo, setTransferTo] = useState<null | { value: string; label: string; avatarUrl?: string }>(null);
   const [transferAmount, setTransferAmount] = useState("");
   const { profile } = useUserData();
   const cars = profile?.cars || [];
   const [selectedCar, setSelectedCar] = useState(0);
   const { data: users } = useExchangeUsers();
 
-  // Convertir usuarios a opciones para el UserSearchInput
-  const userOptions = (users || []).map((u: { id: string; username: string; avatar?: string }) => ({
-    value: u.id,
-    label: u.username,
-    avatarUrl: u.avatar || undefined
-  }));
+  // Convertir usuarios a opciones para el UserSearchInput, excluyendo al usuario actual
+  const userOptions = (users || [])
+    .filter((u: { id: string | number }) => u.id !== String(profile?.id))
+    .map((u: { id: string; username: string; avatar?: string }) => ({
+      value: u.id,
+      label: u.username,
+      avatarUrl: u.avatar || undefined
+    }));
   const transferToError = '';
 
   const calculateTotal = () => {
@@ -234,7 +235,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
                   name="transferTo"
                   required={true}
                   errors={{ transferTo: transferToError }}
-                  setFieldValue={(value) => setTransferTo(value as string)}
+                  setFieldValue={setTransferTo}
                   handleBlur={() => {}}
                 />
               </div>
@@ -328,7 +329,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
                       name="transferTo"
                       required={true}
                       errors={{ transferTo: transferToError }}
-                      setFieldValue={(value) => setTransferTo(value as string)}
+                      setFieldValue={setTransferTo}
                       handleBlur={() => {}}
                     />
                   </div>

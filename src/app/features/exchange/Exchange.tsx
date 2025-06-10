@@ -20,11 +20,11 @@ export const Exchange: React.FC = () => {
     exchangeToken,
     isExchangingToken,  
     exchangeTokenError,
-    transferToken,
+    // transferToken,
     isTransferringToken,
     transferTokenError,
-    transferNFT,
-    isTransferringNFT,
+    // transferNFT,
+    // isTransferringNFT,
     transferNFTError
   } = useExchange();
 

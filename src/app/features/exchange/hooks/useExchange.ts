@@ -1,12 +1,15 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { exchangeEndpoints } from '../../../api/endpoints/exchange.endpoints';
 import type {
   ExchangeRequest,
   ExchangeResponse,
   TokenTransferRequest,
   NFTTransferRequest,
-  NFTTransferResponse
+  NFTTransferResponse,
+  CreateOrderRequest,
+  Order
 } from '../../../api/endpoints/exchange.endpoints';
+import { exchangeService } from '../../../services/exchangeService';
 
 export const useExchange = () => {
   const exchangeTokenMutation = useMutation<ExchangeResponse, Error, ExchangeRequest>({
@@ -34,4 +37,26 @@ export const useExchange = () => {
     isTransferringNFT: transferNFTMutation.isPending,
     transferNFTError: transferNFTMutation.error
   };
+};
+
+export const useCreateOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation<Order, Error, CreateOrderRequest>({
+    mutationFn: exchangeService.createOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orderbook'] as const });
+      queryClient.invalidateQueries({ queryKey: ['recent-trades'] as const });
+    }
+  });
+};
+
+export const useCancelOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (orderId: number) => exchangeService.cancelOrder(orderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orderbook'] as const });
+      queryClient.invalidateQueries({ queryKey: ['recent-trades'] as const });
+    }
+  });
 }; 
