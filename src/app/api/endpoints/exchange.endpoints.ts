@@ -16,8 +16,8 @@ export interface ExchangeResponse {
 }
 
 export interface TokenTransferRequest {
-  fromUserId: string;
-  toUserId: string;
+  fromUserId: number;
+  toUserId: number;
   token: string;
   amount: string;
 }

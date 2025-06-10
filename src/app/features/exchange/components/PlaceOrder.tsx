@@ -6,6 +6,7 @@ import { useUserData } from '../../../hooks/useUserData';
 import UserSearchInput from '../../../UI/UserSearchInput';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api/api.config';
+import { exchangeEndpoints, type TokenTransferRequest } from "@/app/api/endpoints/exchange.endpoints";
 
 interface PlaceOrderProps {
   pair: string;
@@ -35,8 +36,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
   const [selectedCar, setSelectedCar] = useState(0);
   const { data: users } = useExchangeUsers();
 
-  // Debug: mostrar ids para depuración
-  console.log('profile.id:', profile?.id, 'user ids:', (users || []).map((u: { id: any }) => u.id));
+
 
   // Convertir usuarios a opciones para el UserSearchInput, excluyendo al usuario actual
   const userOptions = (users || [])
@@ -52,6 +52,75 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
     if (!price || !amount) return "0.00";
     return (parseFloat(price) * parseFloat(amount)).toFixed(2);
   };
+
+
+  const getUserInfo = () => {
+    const userString = localStorage.getItem("user")
+    if (!userString) return null;
+    return JSON.parse(userString).profile;
+  }
+
+
+
+  // Manejo de order:
+  const buyOrder = () => {
+    
+    console.log(section)
+    console.log(orderType)
+    console.log(side)
+    console.log(price)
+    console.log(amount)
+
+
+
+
+  }
+
+
+
+
+  // Manejo de transfer
+  const handleTransferToken = async () => {
+
+    const user = getUserInfo();
+
+    if(!transferTo ||  !transferAmount) {
+      console.error("Rellena todos los inputs para continuar!")
+      return;
+    }
+
+
+    if(transferType === 'token') {
+
+      const body: TokenTransferRequest = {
+        fromUserId: user?.id ,
+        toUserId: Number(transferTo.value),
+        token: pair,
+        amount: transferAmount
+      }
+
+      try {
+        await exchangeEndpoints.transferToken(body)
+        console.log("Transferencia exitosa")
+      } catch (error) {
+        console.error("Error al transferir tokens", error)
+      }
+    }
+
+    if(transferType === 'nft') {
+      console.log(pair);
+      console.log(user)
+      console.log(transferTo)
+      console.log(transferAmount)
+      console.log(transferType)
+
+      //? Lanza esto
+    }
+
+  }
+
+
+
 
   return (
     <div className="h-full flex flex-col">
@@ -183,6 +252,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
 
             <button
               type="button"
+              onClick={buyOrder}
               className={`mt-auto py-3 px-4 rounded-lg font-medium transition-colors ${
                 side === "buy"
                   ? "bg-green-500 hover:bg-green-600"
@@ -255,6 +325,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
               </div>
               <button
                 type="button"
+                onClick={handleTransferToken}
                 className="mt-2 py-3 px-4 rounded-lg font-medium bg-fuchsia-500 hover:bg-fuchsia-600 text-white transition-colors"
               >
                 Transfer Token
