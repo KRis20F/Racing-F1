@@ -23,9 +23,9 @@ export interface TokenTransferRequest {
 }
 
 export interface NFTTransferRequest {
-  fromUserId: string;
-  toUserId: string;
-  nftId: string;
+  fromUserId: number;
+  toUserId: number;
+  nft: string;
 }
 
 export interface NFTTransferResponse {

@@ -6,7 +6,7 @@ import { useUserData } from '../../../hooks/useUserData';
 import UserSearchInput from '../../../UI/UserSearchInput';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api/api.config';
-import { exchangeEndpoints, type CreateOrderRequest, type TokenTransferRequest } from "@/app/api/endpoints/exchange.endpoints";
+import { exchangeEndpoints, type CreateOrderRequest, type NFTTransferRequest, type TokenTransferRequest } from "@/app/api/endpoints/exchange.endpoints";
 import type { Car } from '../../../types/api/auth.types';
 
 interface PlaceOrderProps {
@@ -122,18 +122,26 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
       }
     }
 
-    if(transferType === 'nft') {
-      console.log(pair);
-      console.log(user)
-      console.log(transferTo)
-      console.log(transferAmount)
-      console.log(transferType)
-
-      //? Lanza esto
-    }
-
   }
 
+  const handleTransferNFT = async () => {
+    const user = getUserInfo();
+
+    const body: NFTTransferRequest = {
+      fromUserId: Number(user?.id) ,
+      toUserId: Number(transferTo?.value),
+      nft: String(cars[selectedCar].id),
+    }
+
+    try {
+      console.log(body)
+      await exchangeEndpoints.transferNFT(body)
+      console.log("Transferencia exitosa")
+    } catch (error) {
+      console.error("Error al transferir NFT", error)
+    }
+    
+  }
 
 
 
@@ -439,6 +447,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
                   </div>
                   <button
                     type="button"
+                    onClick={handleTransferNFT}
                     className="mt-2 py-3 px-4 rounded-lg font-medium bg-fuchsia-500 hover:bg-fuchsia-600 text-white transition-colors"
                   >
                     Transfer NFT
