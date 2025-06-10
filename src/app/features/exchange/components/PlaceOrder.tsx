@@ -4,9 +4,23 @@ import { Canvas } from "@react-three/fiber";
 import { CarModel } from '../../userDashboard/components/CarModel';
 import { useUserData } from '../../../hooks/useUserData';
 import UserSearchInput from '../../../UI/UserSearchInput';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../../../api/api.config';
+
 interface PlaceOrderProps {
   pair: string;
 }
+
+// Hook para obtener usuarios para el exchange
+const useExchangeUsers = () => {
+  return useQuery({
+    queryKey: ['exchange-users'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/wallet/users');
+      return data;
+    }
+  });
+};
 
 const PlaceOrder = ({ pair }: PlaceOrderProps) => {
   const [section, setSection] = useState<'order' | 'transfer'>('order');
@@ -20,13 +34,14 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
   const { profile } = useUserData();
   const cars = profile?.cars || [];
   const [selectedCar, setSelectedCar] = useState(0);
+  const { data: users } = useExchangeUsers();
 
-  // Simulación de usuarios para el UserSearchInput
-  const userOptions = [
-    { value: 'user1', label: 'Juan Pérez' },
-    { value: 'user2', label: 'Ana Gómez' },
-    { value: 'wallet1', label: '0x123...abc (Wallet)' },
-  ];
+  // Convertir usuarios a opciones para el UserSearchInput
+  const userOptions = (users || []).map((u: { id: string; username: string; avatar?: string }) => ({
+    value: u.id,
+    label: u.username,
+    avatarUrl: u.avatar || undefined
+  }));
   const transferToError = '';
 
   const calculateTotal = () => {
@@ -212,16 +227,16 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
             <form className="flex flex-col gap-4">
               <div>
                 <label className="block text-sm text-gray-400 mb-1">To (User ID o Wallet)</label>
-                  <UserSearchInput
-                    value={transferTo}
-                    options={userOptions}
-                    label="Buscar usuario"
-                    name="transferTo"
-                    required={true}
-                    errors={{ transferTo: transferToError }}
-                    setFieldValue={(value) => setTransferTo(value as string)}
-                    handleBlur={() => {}}
-                  />
+                <UserSearchInput
+                  value={transferTo}
+                  options={userOptions}
+                  label="Buscar usuario"
+                  name="transferTo"
+                  required={true}
+                  errors={{ transferTo: transferToError }}
+                  setFieldValue={(value) => setTransferTo(value as string)}
+                  handleBlur={() => {}}
+                />
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Amount ({pair.split("/")[0]})</label>
