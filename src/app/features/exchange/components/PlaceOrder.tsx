@@ -11,6 +11,8 @@ import type { Car } from '../../../types/api/auth.types';
 
 interface PlaceOrderProps {
   pair: string;
+  onExchangeSuccess?: () => void;
+  onTransferSuccess?: (type: 'token' | 'nft') => void;
 }
 
 const useExchangeUsers = () => {
@@ -23,7 +25,7 @@ const useExchangeUsers = () => {
   });
 };
 
-const PlaceOrder = ({ pair }: PlaceOrderProps) => {
+const PlaceOrder = ({ pair, onExchangeSuccess, onTransferSuccess }: PlaceOrderProps) => {
   const [section, setSection] = useState<'order' | 'transfer'>('order');
   const [orderType, setOrderType] = useState<"limit" | "market">("limit");
   const [side, setSide] = useState<"buy" | "sell">("buy");
@@ -63,13 +65,10 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
 
   // Manejo de order:
   const buyOrder = async () => {
-    
     if(!price || !amount) {
       console.error("Rellena todos los inputs para continuar!")
       return;
     }
-
-
 
     const body: CreateOrderRequest = {
       side,
@@ -79,16 +78,13 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
       pair
     }
 
-    console.log(body);
-
     try {
-      await exchangeEndpoints.createOrder(body)
-      console.log("Orden exitosa")
+      await exchangeEndpoints.createOrder(body);
+      console.log("Orden exitosa");
+      onExchangeSuccess?.();
     } catch (error) {
-      console.error("Error al crear orden", error)
+      console.error("Error al crear orden", error);
     }
-
-
   }
 
 
@@ -96,7 +92,6 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
 
   // Manejo de transfer
   const handleTransferToken = async () => {
-
     const user = getUserInfo();
 
     if(!transferTo ||  !transferAmount) {
@@ -104,9 +99,7 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
       return;
     }
 
-
     if(transferType === 'token') {
-
       const body: TokenTransferRequest = {
         fromUserId: user?.id ,
         toUserId: Number(transferTo.value),
@@ -115,13 +108,13 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
       }
 
       try {
-        await exchangeEndpoints.transferToken(body)
-        console.log("Transferencia exitosa")
+        await exchangeEndpoints.transferToken(body);
+        console.log("Transferencia exitosa");
+        onTransferSuccess?.('token');
       } catch (error) {
-        console.error("Error al transferir tokens", error)
+        console.error("Error al transferir tokens", error);
       }
     }
-
   }
 
   const handleTransferNFT = async () => {
@@ -134,13 +127,13 @@ const PlaceOrder = ({ pair }: PlaceOrderProps) => {
     }
 
     try {
-      console.log(body)
-      await exchangeEndpoints.transferNFT(body)
-      console.log("Transferencia exitosa")
+      console.log(body);
+      await exchangeEndpoints.transferNFT(body);
+      console.log("Transferencia exitosa");
+      onTransferSuccess?.('nft');
     } catch (error) {
-      console.error("Error al transferir NFT", error)
+      console.error("Error al transferir NFT", error);
     }
-    
   }
 
 

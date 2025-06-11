@@ -7,8 +7,14 @@ import type {
   RaceResultResponse
 } from '../api/endpoints/race.endpoints';
 
+interface BetData {
+  userId: number;
+  rivalId: number;
+  cantidad: number;
+}
+
 export const useRace = () => {
-  const createBetMutation = useMutation<BetResponse, Error, BetRequest>({
+  const createBetMutation = useMutation<BetResponse, Error, BetData>({
     mutationFn: raceService.createBet
   });
 

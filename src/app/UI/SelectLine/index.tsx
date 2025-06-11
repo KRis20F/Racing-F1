@@ -1,4 +1,3 @@
-
 import Select from 'react-select';
 
 const SelectInput = (props: any) => {
@@ -25,19 +24,20 @@ const SelectInput = (props: any) => {
                 : '!border-tertiary focus:!border-tertiary '
             }`,
           placeholder: () => 'text-sm !text-gray-300',
-          multiValueLabel: () => '!text-white  ',
+          multiValueLabel: () => '!text-white',
           multiValue: () =>
-            '!text-red-500 !bg-gray-600  !rounded-full !border !border-tertiary !text-sm overflow-hidden',
+            '!text-red-500 !bg-gray-600 !rounded-full !border !border-tertiary !text-sm overflow-hidden',
+          menu: () => '!bg-gray-700 !border !border-gray-600 !rounded-lg !mt-2',
+          menuList: () => '!p-2',
           option: ({ isFocused, isSelected }) =>
-            `!text-base ${
+            `!text-base !px-4 !py-2 !rounded-lg ${
               isFocused
-                ? ' !text-base !text-tertiary'
+                ? '!bg-gray-600 !text-white'
                 : isSelected
-                ? '!text-blue-500'
-                : '!text-tertiary'
+                ? '!bg-gray-800 !text-blue-500'
+                : '!text-gray-300 hover:!bg-gray-600'
             }`,
-
-          noOptionsMessage: () => '',
+          noOptionsMessage: () => '!text-gray-300',
         }}
       />
       {props.error && (

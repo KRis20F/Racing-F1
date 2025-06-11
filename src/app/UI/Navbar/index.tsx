@@ -131,7 +131,7 @@ export default function Navbar({ children }: NavbarProps) {
                   {/* Avatar del usuario */}
                   <button
                     onClick={() => navigate(`${BASE_PATH}/dashboard/profile`)}
-                    className="flex items-center focus:outline-none"
+                    className="flex items-center focus:outline-none cursor-pointer"
                     title={userData?.profile?.username || 'Perfil'}
                   >
                     {userData?.profile?.avatar ? (
@@ -149,7 +149,7 @@ export default function Navbar({ children }: NavbarProps) {
                   {/* Icono de logout */}
                   <button
                     onClick={logout}
-                    className="ml-2 p-2 rounded-full hover:bg-red-100 transition-colors"
+                    className="ml-2 p-2 rounded-full hover:bg-red-100 transition-colors cursor-pointer"
                     title="Cerrar sesión"
                   >
                     <svg className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

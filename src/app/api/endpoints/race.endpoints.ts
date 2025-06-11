@@ -1,18 +1,14 @@
 import { api } from '../api.config';
 
 export interface BetRequest {
-  raceId: number;
-  amount: string;
-  carId: number;
-  position: number;
+  userId: number;
+  rivalId: number;
+  cantidad: number;
 }
 
 export interface BetResponse {
-  betId: number;
-  raceId: number;
-  amount: string;
-  potentialWinnings: string;
-  timestamp: string;
+  status: string;
+  message: string;
 }
 
 export interface RaceResult {
@@ -49,7 +45,7 @@ export interface MatchmakingResponse {
 
 export const raceEndpoints = {
   createBet: async (betData: BetRequest): Promise<BetResponse> => {
-    const response = await api.post<BetResponse>('/bet/create', betData);
+    const response = await api.post<BetResponse>('/api/bet/create', betData);
     return response.data;
   },
 

@@ -5,17 +5,19 @@ import { exchangeEndpoints } from '../../../api/endpoints/exchange.endpoints';
 
 interface OrderBookProps {
   pair: string;
+  isLoading?: boolean;
 }
 
-const OrderBook = ({ pair }: OrderBookProps) => {
+const OrderBook = ({ pair, isLoading: externalLoading }: OrderBookProps) => {
   const [activeTab, setActiveTab] = useState<"all" | "buy" | "sell">("all");
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading: queryLoading, error } = useQuery({
     queryKey: ["orderbook", pair],
     queryFn: () => exchangeEndpoints.getOrderBook(pair),
     refetchInterval: 3000,
   });
 
+  const isLoading = externalLoading || queryLoading;
   const buyOrders: Order[] = data?.buy || [];
   const sellOrders: Order[] = data?.sell || [];
 

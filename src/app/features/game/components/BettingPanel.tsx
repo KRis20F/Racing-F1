@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { api } from '../../../api/api.config';
+import { useAuthContext } from '../../../providers/hooks/useAuthContext';
 // import { SolanaService } from '../../../api/config/solana';
 
 // TODO: Implementar diseño de panel de apuestas
@@ -16,13 +17,14 @@ interface Player {
 }
 
 interface BettingPanelProps {
-  onBetSubmit: (betData: { playerId: number; amount: number }) => Promise<void>;
+  onBetSubmit: (betData: { userId: number; rivalId: number; cantidad: number }) => Promise<void>;
   isLoading: boolean;
   isBetting: boolean;
 }
 
 const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isBetting }) => {
   const { publicKey } = useWallet();
+  const { userData } = useAuthContext();
   const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [betAmount, setBetAmount] = useState<number>(0);
@@ -45,12 +47,13 @@ const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isB
   };
 
   const handleBetSubmit = async () => {
-    if (!publicKey || !selectedPlayer) return;
+    if (!publicKey || !selectedPlayer || !userData?.profile) return;
 
     try {
       await onBetSubmit({
-        playerId: selectedPlayer,
-        amount: betAmount
+        userId: userData.profile.id,
+        rivalId: selectedPlayer,
+        cantidad: betAmount
       });
       
       // Reset form after successful bet
@@ -58,6 +61,7 @@ const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isB
       setSelectedPlayer(null);
     } catch (error) {
       console.error('Error placing bet:', error);
+      setError('Error placing bet. Please try again.');
     }
   };
 
@@ -66,6 +70,12 @@ const BettingPanel: React.FC<BettingPanelProps> = ({ onBetSubmit, isLoading, isB
       <h3 className="text-xl font-bold text-white mb-4">Place Your Bet</h3>
       
       <div className="space-y-4">
+        {error && (
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
+            {error}
+          </div>
+        )}
+
         {/* Players List */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-300">Select Player</label>

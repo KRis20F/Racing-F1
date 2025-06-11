@@ -1,13 +1,18 @@
 import { raceEndpoints } from '../api/endpoints/race.endpoints';
 import type {
-  BetRequest,
   BetResponse,
   RaceResultRequest,
   RaceResultResponse
 } from '../api/endpoints/race.endpoints';
 
+interface BetData {
+  userId: number;
+  rivalId: number;
+  cantidad: number;
+}
+
 export const raceService = {
-  createBet: async (betData: BetRequest): Promise<BetResponse> => {
+  createBet: async (betData: BetData): Promise<BetResponse> => {
     return await raceEndpoints.createBet(betData);
   },
 
