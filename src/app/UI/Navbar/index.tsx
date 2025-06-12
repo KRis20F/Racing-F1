@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../../assets/svg/guci.svg";
 import { BASE_PATH } from "../../providers/AuthContext";
 import { useAuthContext } from '../../providers/hooks/useAuthContext';
+import { FaGamepad, FaShoppingCart, FaExchangeAlt, FaUser, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 
 interface NavbarProps {
   children?: ReactNode;
@@ -22,7 +23,7 @@ export default function Navbar({ children }: NavbarProps) {
   useEffect(() => {
     if (!isHome) return;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 60);
+      setScrolled(window.scrollY > 120);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -93,6 +94,15 @@ export default function Navbar({ children }: NavbarProps) {
     ["Login", "Register"].includes(route.name)
   );
 
+  const ICONS: Record<string, JSX.Element> = {
+    Game: <FaGamepad className="inline mr-2 mb-1" />,
+    Shop: <FaShoppingCart className="inline mr-2 mb-1" />,
+    Exchange: <FaExchangeAlt className="inline mr-2 mb-1" />,
+    Profile: <FaUser className="inline mr-2 mb-1" />,
+    Login: <FaSignInAlt className="inline mr-2 mb-1" />,
+    Register: <FaUserPlus className="inline mr-2 mb-1" />,
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <nav
@@ -117,9 +127,9 @@ export default function Navbar({ children }: NavbarProps) {
                   <button
                     key={route.path}
                     onClick={() => navigate(route.path)}
-                    className="px-4 py-2 cursor-pointer text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    className="px-4 py-2 cursor-pointer text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center"
                   >
-                    {route.name}
+                    {ICONS[route.name]}{route.name}
                   </button>
                 ))}
               </ul>
@@ -132,11 +142,11 @@ export default function Navbar({ children }: NavbarProps) {
                   <button
                     onClick={() => navigate(`${BASE_PATH}/dashboard/profile`)}
                     className="flex items-center focus:outline-none cursor-pointer"
-                    title={userData?.profile?.username || 'Perfil'}
+                    title={userData?.username || 'Perfil'}
                   >
-                    {userData?.profile?.avatar ? (
+                    {userData?.avatar ? (
                       <img
-                        src={userData.profile.avatar}
+                        src={userData.avatar}
                         alt="Avatar"
                         className="w-10 h-10 rounded-full border-2 border-white object-cover"
                       />
@@ -162,9 +172,9 @@ export default function Navbar({ children }: NavbarProps) {
                   <button
                     key={route.path}
                     onClick={() => navigate(route.path)}
-                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center"
                   >
-                    {route.name}
+                    {ICONS[route.name]}{route.name}
                   </button>
                 ))
               )}
@@ -211,7 +221,7 @@ export default function Navbar({ children }: NavbarProps) {
                       }}
                       className="w-full px-4 py-2 text-left text-gray-300 hover:text-white hover:bg-gray-700"
                     >
-                      {route.name}
+                      {ICONS[route.name]}{route.name}
                     </button>
                   </li>
                 ))}
@@ -224,7 +234,7 @@ export default function Navbar({ children }: NavbarProps) {
                       }}
                       className="w-full px-4 py-2 text-left text-gray-300 hover:text-white hover:bg-gray-700"
                     >
-                      {route.name}
+                      {ICONS[route.name]}{route.name}
                     </button>
                   </li>
                 ))}

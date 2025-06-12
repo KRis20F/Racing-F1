@@ -1,18 +1,34 @@
 import type { MarketplaceCar } from "@/app/api/endpoints/marketplace.endpoints";
 import { CarCard } from "./CarCard";
+import { motion } from "framer-motion";
 
 interface CardListProps {
     carList: MarketplaceCar[];
     loading?: boolean;
 }
 
+const container = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+};
+
 export function CardList({ carList, loading }: CardListProps) {
     if (loading) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 {[1, 2, 3].map((i) => (
                     <div key={`skeleton-${i}`} className="animate-pulse">
-                        <div className="h-48 bg-[#1B254B] rounded-xl mb-4" />
+                        <div className="h-56 bg-[#1B254B] rounded-xl mb-4" />
                         <div className="h-6 bg-[#1B254B] rounded w-3/4 mb-2" />
                         <div className="h-4 bg-[#1B254B] rounded w-1/2 mb-4" />
                         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -55,16 +71,24 @@ export function CardList({ carList, loading }: CardListProps) {
     });
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-12"
+        >
             {uniqueCars.map((car) => {
                 const uniqueKey = `car-${car.id}-${car.market_status}-${car.model_path || car.name}-${car.price}`;
                 return (
-                    <CarCard 
-                        key={uniqueKey} 
-                        car={car} 
-                    />
+                    <motion.div
+                        key={uniqueKey}
+                        variants={item}
+                        className="transform hover:scale-[1.02] transition-transform duration-300"
+                    >
+                        <CarCard car={car} />
+                    </motion.div>
                 );
             })}
-        </div>
+        </motion.div>
     );
 }

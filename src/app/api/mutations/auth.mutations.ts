@@ -6,47 +6,23 @@ import type {
   AuthResponse, 
   ChangePasswordData,
   UpdateProfileData,
-  UserProfile,
+  UserProfile
 } from '../../types/api/auth.types';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../../utils/storage';
-import type { WelcomeGifts } from '../../services/walletService';
-
-interface AuthResponse {
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    publicKey?: string;
-    welcomeGifts?: WelcomeGifts;
-  };
-}
-
-interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  fechaNacimiento: string;
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
 
 export const useAuth = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: user, isLoading: isLoadingUser } = useQuery({
+  const { data: user, isLoading: isLoadingUser } = useQuery<UserProfile>({
     queryKey: ['user'],
     queryFn: authEndpoints.getCurrentUser,
     retry: false,
     enabled: !!storage.getToken()
   });
 
-  const { mutateAsync: login, isLoading: isLoggingIn, error: loginError } = useMutation<AuthResponse, Error, LoginData>({
+  const { mutateAsync: login, isPending: isLoggingIn, error: loginError } = useMutation<AuthResponse, Error, LoginCredentials>({
     mutationFn: authEndpoints.login,
     onSuccess: (data) => {
       storage.setToken(data.token);
@@ -54,7 +30,7 @@ export const useAuth = () => {
     }
   });
 
-  const { mutateAsync: register, isLoading: isRegistering, error: registerError } = useMutation<AuthResponse, Error, RegisterData>({
+  const { mutateAsync: register, isPending: isRegistering, error: registerError } = useMutation<AuthResponse, Error, RegisterData>({
     mutationFn: authEndpoints.register,
     onSuccess: (data) => {
       storage.setToken(data.token);
@@ -69,7 +45,7 @@ export const useAuth = () => {
         console.error('Update profile response missing user data:', data);
         throw new Error('Invalid update profile response');
       }
-      localStorage.setItem('user', JSON.stringify(data.user));
+      storage.setUserData(data.user);
       queryClient.setQueryData(['user'], data.user);
     }
   });
@@ -80,7 +56,7 @@ export const useAuth = () => {
 
   const logout = () => {
     console.log('Logging out...');
-    storage.clearUserData();
+    storage.clearAllStorage();
     queryClient.clear();
     navigate('/auth?mode=login', { replace: true });
   };

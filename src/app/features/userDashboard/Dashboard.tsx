@@ -20,6 +20,7 @@ export const Dashboard = () => {
   const isDashboardRoot = location.pathname === BASE_PATH || location.pathname === `${BASE_PATH}/dashboard`;
   const [showWalletDialog, setShowWalletDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState<number | null>(null);
+  const [showSidebarDrawer, setShowSidebarDrawer] = useState(false);
 
   const { data: userStats, isLoading: isLoadingStats } = useQuery<UserStats>({
     queryKey: ['userStats'],
@@ -168,15 +169,15 @@ export const Dashboard = () => {
                 <h1 className="text-3xl font-bold text-white mb-2">{profile?.username || 'Piloto'}</h1>
                 <p className="text-gray-400">Rango: {profile?.rank || 'Novato'}</p>
                 <div className="text-gray-400">
-                  <p>Experiencia: {profile?.experience || 0} XP</p>
-                  <p className="text-sm">Siguiente nivel: {((profile?.level || 0) + 1) * 1000 - (profile?.experience || 0)} XP restantes</p>
+                  <p>Experiencia: {typeof profile?.experience === 'object' ? profile?.experience?.current ?? 0 : profile?.experience ?? 0} XP</p>
+                  <p className="text-sm">Siguiente nivel: {((profile?.level || 0) + 1) * 1000 - (typeof profile?.experience === 'object' ? profile?.experience?.current ?? 0 : profile?.experience ?? 0)} XP restantes</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-gray-400">Mejor Tiempo por Vuelta</p>
-                <p className="text-2xl font-bold text-white">{game?.bestLapTime || '--:--'}</p>
+                <p className="text-2xl font-bold text-white">{game?.bestLapTime ?? '--:--'}</p>
                 <p className="text-gray-400 mt-2">Distancia Total</p>
-                <p className="text-xl font-bold text-white">{game?.totalDistance || 0}km</p>
+                <p className="text-xl font-bold text-white">{game?.totalDistance ?? 0}km</p>
               </div>
               </div>
             </div>
@@ -251,7 +252,7 @@ export const Dashboard = () => {
                     </div>
                     <div className="flex gap-2">
                       <button 
-                        onClick={() => setSelectedCar(prev => (prev === 0 ? profile.cars.length - 1 : prev! - 1))}
+                        onClick={() => setSelectedCar(prev => (prev === 0 ? (profile?.cars?.length ?? 1) - 1 : (prev ?? 0) - 1))}
                         className="p-2 rounded-full bg-[#1B254B] hover:bg-[#4318FF] transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -259,7 +260,7 @@ export const Dashboard = () => {
                         </svg>
                       </button>
                       <button 
-                        onClick={() => setSelectedCar(prev => (prev === profile.cars.length - 1 ? 0 : prev! + 1))}
+                        onClick={() => setSelectedCar(prev => (prev === (profile?.cars?.length ?? 1) - 1 ? 0 : (prev ?? 0) + 1))}
                         className="p-2 rounded-full bg-[#1B254B] hover:bg-[#4318FF] transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -321,7 +322,7 @@ export const Dashboard = () => {
 
                   {/* Navigation Dots */}
                   <div className="flex justify-center gap-2 mt-2">
-                    {profile.cars.map((_, index) => (
+                    {profile.cars.map((index: number) => (
                       <button
                         key={index}
                         onClick={() => setSelectedCar(index)}
@@ -460,7 +461,7 @@ export const Dashboard = () => {
           <div className="bg-[#111C44] rounded-[20px] p-4">
             <div className="mb-4">
               <h2 className="text-xl font-bold text-white">Resumen de Carreras</h2>
-              <p className="text-green-500">Apuestas Totales: {globalStats?.totalBets || 0}</p>
+              <p className="text-green-500">Apuestas Totales: {globalStats?.totalBets ?? 0}</p>
               </div>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -506,13 +507,33 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0B1437]">
-      <Sidebar />
-      <div className="flex-1 pl-64">
-        <div className="p-4">
-          <div className="max-w-[1400px] mx-auto">
-            {isDashboardRoot ? renderDashboardContent() : <Outlet />}
-          </div>
+    <div className="bg-[#0B1437] min-h-screen relative">
+      {/* Botón hamburguesa solo en móvil */}
+      <button
+        className="fixed top-4 left-4 z-30 md:hidden bg-[#111C44] p-2 rounded-lg shadow-lg"
+        onClick={() => setShowSidebarDrawer(true)}
+        aria-label="Abrir menú"
+      >
+        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      {/* Sidebar fijo en desktop, drawer en móvil */}
+      <Sidebar 
+        isDrawer={!showSidebarDrawer ? false : true}
+        show={showSidebarDrawer}
+        onClose={() => setShowSidebarDrawer(false)}
+      />
+      {/* Overlay para drawer en móvil */}
+      {showSidebarDrawer && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
+          onClick={() => setShowSidebarDrawer(false)}
+        />
+      )}
+      <div className="ml-0 md:ml-64 px-2 md:px-8 py-4 md:py-8 transition-all">
+        <div className="max-w-[1400px] mx-auto">
+          {isDashboardRoot ? renderDashboardContent() : <Outlet />}
         </div>
       </div>
     </div>

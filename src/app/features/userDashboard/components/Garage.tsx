@@ -2,8 +2,9 @@ import { useState, Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html, PerspectiveCamera } from '@react-three/drei';
 import { useUserData } from '../../../hooks/useUserData';
-import { CarModel } from '../../../UI/CarModel';
+import { CarModel } from '../../../UI/CarModel/index';
 import type { Car } from '../../../types/api/auth.types';
+import { Skeleton, SkeletonGroup, CardSkeleton } from '../../../UI/Skeleton';
 
 const LoadingScreen = () => (
   <Html center>
@@ -39,8 +40,28 @@ export const Garage = () => {
 
   if (isProfileLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0B1437]">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#4318FF]"></div>
+      <div className="min-h-screen bg-[#0B1437] p-8">
+        <SkeletonGroup>
+          {/* Breadcrumb Skeleton */}
+          <div className="flex items-center gap-2 text-white/80 mb-4">
+            <Skeleton variant="text" className="h-4 w-24" />
+            <Skeleton variant="text" className="h-4 w-4" />
+            <Skeleton variant="text" className="h-4 w-20" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Car List Skeleton */}
+            <div className="lg:col-span-1 space-y-4">
+              {[1,2,3].map((i) => (
+                <CardSkeleton key={i} />
+              ))}
+            </div>
+            {/* 3D Viewer Skeleton + Car Details Skeleton */}
+            <div className="lg:col-span-2 space-y-6">
+              <Skeleton variant="rectangular" className="w-full h-[400px] rounded-2xl" animation="wave" />
+              <CardSkeleton />
+            </div>
+          </div>
+        </SkeletonGroup>
       </div>
     );
   }

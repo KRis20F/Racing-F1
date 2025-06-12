@@ -1,10 +1,10 @@
 import { createContext } from 'react';
-import type { UserData } from '../types/api/auth.types';
+import type { UserProfile } from '../types/api/auth.types';
 
 export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  userData: UserData | null;
+  userData: UserProfile | null;
   logout: () => Promise<void>;
 }
 

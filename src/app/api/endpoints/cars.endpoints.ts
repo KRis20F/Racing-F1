@@ -85,5 +85,11 @@ export const carsEndpoints = {
       console.error('Error getting available models:', error);
       return { models: [] };
     }
+  },
+
+  // Obtener conteo de autos por categoría
+  getCategoryCounts: async (): Promise<{ category: string; count: number }[]> => {
+    const response = await api.get('/api/cars/category-counts');
+    return response.data;
   }
 }; 

@@ -11,58 +11,90 @@ export interface RegisterData extends LoginCredentials {
 export interface Car {
   id: string;
   name: string;
-  description: string;
-  modelPath: string;
   category: string;
-  specs: {
-    power: string;
-    acceleration: string;
-    topSpeed: string;
-    weight: string;
+  modelPath: string;
+  thumbnail_image: string;
+  stats: {
+    speed: number;
+    acceleration: number;
+    handling: number;
+    braking: number;
   };
-  scale: number;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  cameraPosition: [number, number, number];
-  fov: number;
-  preview_image?: string;
-  thumbnail_image?: string;
-  price?: number;
 }
 
 export interface UserProfile {
   id: number;
   username: string;
   email: string;
-  publicKey: string;
-  avatar: string;
+  publicKey?: string;
+  avatar?: string;
   level: number;
-  rank: string;
-  experience: number;
-  badges: string[];
-  fechaNacimiento: string;
-  cars: Car[];
+  badges?: string[];
+  fechaNacimiento?: string;
+  cars?: Car[];
+  rank?: number;
+  experience?: {
+    current: number;
+    total: number;
+  };
+  finances?: {
+    tokenBalance: string;
+    usdBalance: string;
+    wallet: {
+      balance: string;
+      address: string;
+    };
+    transaction_limits: {
+      daily_limit: number;
+      monthly_limit: number;
+      max_transaction: number;
+    };
+    billing_preferences: {
+      auto_pay: boolean;
+      invoice_email: string | null;
+      default_currency: string;
+    };
+  };
 }
 
 export interface GameData {
-  bestLapTime: string;
-  totalDistance: number;
+  experience: number;
   totalRaces: number;
   wins: number;
   losses: number;
+  rank: string;
+  stats: {
+    bestLapTime: number | null;
+    carCollection: string[];
+    favoriteTrack: string | null;
+    totalDistance: number;
+  };
 }
 
 export interface FinanceData {
-  usdBalance: string;
-  wallet: string;
   tokenBalance: string;
-  recentTransactions?: Transaction[];
+  usdBalance: string;
+  wallet: {
+    balance: string;
+    address: string;
+  };
+  transaction_limits: {
+    daily_limit: number;
+    monthly_limit: number;
+    max_transaction: number;
+  };
+  billing_preferences: {
+    auto_pay: boolean;
+    invoice_email: string | null;
+    default_currency: string;
+  };
 }
 
 export interface UserData {
   profile: UserProfile;
   game: GameData;
   finances: FinanceData;
+  bets: BetData[];
 }
 
 export interface AuthResponse {

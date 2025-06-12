@@ -1,15 +1,5 @@
 import { api } from '../api.config';
-
-interface UserProfile {
-  id: number;
-  username: string;
-  email: string;
-  publicKey: string;
-  avatar: string;
-  level: number;
-  badges: string[];
-  fechaNacimiento: string;
-}
+import type { UserProfile } from '../../types/api/auth.types';
 
 interface GameData {
   experience: number;

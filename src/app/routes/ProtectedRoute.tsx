@@ -19,7 +19,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && location.pathname !== '/' && !location.pathname.startsWith('/auth')) {
     return <Navigate to="/auth?mode=login" state={{ from: location.pathname }} replace />;
   }
 

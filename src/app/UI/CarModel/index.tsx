@@ -90,6 +90,8 @@ export function CarModel({
     : modelPath.startsWith('/') 
       ? joinUrl(API_URL, modelPath)
       : joinUrl(API_URL, `models3d/${modelPath}`);
+
+  console.log('Loading model from:', fullModelPath); // Add logging for debugging
   
   // Load the model (hooks must be at the top level)
   const { scene } = useGLTF(fullModelPath) as GLTF & { errors?: string[] };

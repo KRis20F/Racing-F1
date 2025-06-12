@@ -5,7 +5,7 @@ import type {
   RegisterData, 
   ChangePasswordData,
   UpdateProfileData,
-  UserData
+  UserProfile
 } from '../../types/api/auth.types';
 
 export const authEndpoints = {
@@ -19,8 +19,8 @@ export const authEndpoints = {
     return response.data;
   },
 
-  getCurrentUser: async (): Promise<UserData> => {
-    const response = await api.get<UserData>('/api/auth/me');
+  getCurrentUser: async (): Promise<UserProfile> => {
+    const response = await api.get<UserProfile>('/api/auth/me');
     return response.data;
   },
 

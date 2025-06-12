@@ -1,121 +1,52 @@
-import type { ReactNode } from 'react';
-
-export interface StatCardProps {
-  title: string;
-  value: string;
-  change: string;
-  icon: ReactNode;
-}
-
 export interface UserStats {
-  level: number;
-  experience: number;
   totalRaces: number;
   wins: number;
   losses: number;
-  rank: string;
-  tokenBalance: string;
-  stats: {
-    racingStats: {
-      avgSpeed: number;
-      bestLap: string;
-      totalDistance: number;
-    };
-    earnings: {
-      total: number;
-      monthly: number;
-      weekly: number;
-    };
-  };
-}
-
-export interface UserProfile {
-  profile: {
-    username: string;
-    level: number;
-    rank: string;
-    experience: number;
-  };
-  game: {
-    bestLapTime: string;
-    totalDistance: number;
-  };
-  finances: {
-    balance: WalletBalance;
-    wallet: Wallet;
-    recentTransactions?: Transaction[];
-    tokenBalance: string;
-  };
-  cars: Car[];
+  winRate: number;
+  bestLapTime: string;
+  averageLapTime: string;
+  totalDistance: number;
+  favoriteCar: string;
 }
 
 export interface TokenHistory {
-  name: string;
-  value: number;
-  avg: number;
+  timestamp: string;
+  price: number;
+  volume: number;
 }
 
 export interface GlobalStats {
   totalUsers: number;
-  totalBets: number;
+  activeUsers: number;
   totalRaces: number;
+  totalTransactions: number;
+  averageRaceTime: string;
+  popularCars: string[];
+  totalBets: number;
 }
 
 export interface MarketOverview {
-  totalCars: number;
-  popularCars: Car[];
-  recentTransactions: Transaction[];
-  marketStats: {
-    totalVolume: string;
-    avgPrice: string;
-    activeListings: number;
-    last24hTransactions: number;
-  };
+  tokenPrice: number;
+  tokenVolume: number;
+  marketCap: number;
+  circulatingSupply: number;
+  totalSupply: number;
+  priceChange24h: number;
+  volumeChange24h: number;
 }
 
 export interface WalletInfo {
-  usdBalance: number;
-  rctBalance: number;
-  walletAddress: string;
-}
-
-export interface Car {
-  name: string;
-  id: string;
-  type: string;
-}
-
-export interface Wallet {
-  address: string;
-  network: string;
-}
-
-export interface PaymentCard {
-  id: string;
-  last4: string;
-  brand: 'visa' | 'mastercard' | 'amex';
-  expMonth: number;
-  expYear: number;
-  isDefault: boolean;
-}
-
-export interface Transaction {
-  id: string;
-  amount: number;
-  type: 'DEPOSIT' | 'WITHDRAWAL' | 'RACE_REWARD' | 'BET';
-  status: 'COMPLETED' | 'PENDING' | 'FAILED';
-  timestamp: string;
-  description?: string;
-}
-
-export interface WalletBalance {
-  balance: string;
-  usdBalance: string;
-  pendingBalance: string;
-}
-
-export interface TransactionHistory {
-  transactions: Transaction[];
-  totalCount: number;
-  hasMore: boolean;
+  wallet: {
+    address: string;
+    balance: string;
+  };
+  billing_preferences?: {
+    currency: string;
+    notifications: boolean;
+  };
+  transaction_limits?: {
+    daily: number;
+    monthly: number;
+  };
+  usdBalance?: string;
 } 

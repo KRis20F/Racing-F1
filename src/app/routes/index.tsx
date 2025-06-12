@@ -45,11 +45,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Ruta raíz */}
-      <Route path="/" element={
-        <ProtectedRoute>
-          <Home />
-        </ProtectedRoute>
-      } />
+      <Route path="/" element={<Home />} />
       <Route path={BASE_PATH} element={<Navigate to="/" replace />} />
 
       {/* Rutas de autenticación */}

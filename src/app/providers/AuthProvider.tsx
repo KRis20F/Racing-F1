@@ -20,7 +20,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (userData) {
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
+      storage.setUserData(userData);
     }
   }, [userData]);
 
@@ -64,31 +64,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsAuthenticated(false);
 
       // Limpiar almacenamiento
-      storage.clearUserData();
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // Limpiar claves específicas
-      const keysToRemove = [
-        'user',
-        'token',
-        'walletDialogDismissed',
-        'racing_user_data',
-        'persist:root',
-        'lastLogin'
-      ];
-      
-      keysToRemove.forEach(key => {
-        localStorage.removeItem(key);
-        sessionStorage.removeItem(key);
-      });
+      storage.clearAllStorage();
 
       // Redireccionar
       navigate(`${BASE_PATH}/auth?mode=login`, { replace: true });
     } catch (error) {
       console.error('Error during logout:', error);
-      localStorage.clear();
-      sessionStorage.clear();
+      storage.clearAllStorage();
       navigate(`${BASE_PATH}/auth?mode=login`, { replace: true });
     } finally {
       setIsLoggingOut(false);

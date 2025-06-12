@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { AuthProvider } from './providers/AuthProvider';
 import { QueryProvider } from './providers/QueryProvider';
 import { WalletConnectionProvider } from './providers/WalletConnectionProvider';
@@ -10,13 +10,13 @@ function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <QueryProvider>
-        <BrowserRouter>
+        <HashRouter>
           <WalletConnectionProvider>
             <AuthProvider>
               <AppRoutes />
             </AuthProvider>
           </WalletConnectionProvider>
-        </BrowserRouter>
+        </HashRouter>
       </QueryProvider>
     </Suspense>
   );

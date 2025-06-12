@@ -8,9 +8,10 @@ interface DialogProps {
   description?: string;
   children?: React.ReactNode;
   actions?: React.ReactNode;
+  panelClassName?: string;
 }
 
-export const Dialog = ({ isOpen, onClose, title, description, children, actions }: DialogProps) => {
+export const Dialog = ({ isOpen, onClose, title, description, children, actions, panelClassName }: DialogProps) => {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <HeadlessDialog as="div" className="relative z-50" onClose={onClose}>
@@ -37,7 +38,7 @@ export const Dialog = ({ isOpen, onClose, title, description, children, actions 
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <HeadlessDialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-[#111C44] p-6 text-left align-middle shadow-xl transition-all border border-purple-500/20">
+              <HeadlessDialog.Panel className={`w-full max-w-md transform overflow-hidden rounded-2xl bg-[#111C44] p-6 text-left align-middle shadow-xl transition-all border border-purple-500/20 ${panelClassName || ''}`}>
                 <HeadlessDialog.Title
                   as="h3"
                   className="text-xl font-medium leading-6 text-white mb-2"

@@ -1,7 +1,7 @@
 import { useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 // import { Html } from "@react-three/drei"; // Eliminado porque no se usa
-import { CarModel } from '../../../UI/CarModel';
+import { CarModel } from '../../../UI/CarModel/index';
 import { useUserData } from '../../../hooks/useUserData';
 import UserSearchInput from '../../../UI/UserSearchInput';
 import { useQuery } from '@tanstack/react-query';

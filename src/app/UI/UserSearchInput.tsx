@@ -1,4 +1,3 @@
-import React from 'react';
 import SelectLine from './SelectLine';
 
 interface UserOption {

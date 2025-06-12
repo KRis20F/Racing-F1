@@ -5,6 +5,7 @@ export interface CarSpecs {
   weight: string;
   topSpeed: string;
   acceleration: string;
+  handling: string;
 }
 
 export interface MarketplaceCar {

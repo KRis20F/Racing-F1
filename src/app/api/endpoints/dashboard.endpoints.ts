@@ -1,6 +1,6 @@
 import { api } from '../api.config';
 import type { UserStats, TokenHistory, GlobalStats, MarketOverview, WalletInfo } from '../../types/api/dashboard.types';
-import type { UserData } from '../../types/api/auth.types';
+import { authEndpoints } from './auth.endpoints';
 
 // Endpoints
 export const dashboardEndpoints = {
@@ -11,10 +11,7 @@ export const dashboardEndpoints = {
   },
 
   // Información del usuario
-  getUserProfile: async (): Promise<UserData> => {
-    const response = await api.get<UserData>('/api/auth/me');
-    return response.data;
-  },
+  getUserProfile: authEndpoints.getCurrentUser,
 
   // Historial de precios del token
   getTokenHistory: async (): Promise<TokenHistory[]> => {
@@ -36,7 +33,13 @@ export const dashboardEndpoints = {
 
   // Información de la wallet
   getWalletInfo: async (): Promise<WalletInfo> => {
-    const response = await api.get<WalletInfo>('/api/dashboard/wallet/info');
-    return response.data;
+    const userData = await authEndpoints.getCurrentUser();
+    return {
+      wallet: userData.finances?.wallet || {
+        address: userData.publicKey || '',
+        balance: '0.00'
+      },
+      usdBalance: userData.finances?.usdBalance || '0.00'
+    };
   }
 }; 

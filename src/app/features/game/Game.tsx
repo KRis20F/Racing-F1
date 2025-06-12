@@ -1,9 +1,12 @@
 import BettingPanel from "./components/BettingPanel";
 import Leaderboard from "./components/Leaderboard";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRace } from "../../hooks/useRace";
 import { toast } from "react-hot-toast";
 import Navbar from "../../UI/Navbar";
+import { storage } from "../../utils/storage";
+import { useUserData } from '../../hooks/useUserData';
+import { Skeleton, SkeletonGroup, CardSkeleton } from '../../UI/Skeleton';
 
 interface BetData {
   userId: number;
@@ -14,6 +17,30 @@ interface BetData {
 const Game = () => {
   const [isBetting, setIsBetting] = useState(false);
   const { createBet, isCreatingBet } = useRace();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { isLoading } = useUserData();
+
+  useEffect(() => {
+    const handleIframeLoaded = () => {
+      const token = storage.getToken();
+      if (iframeRef.current && token) {
+        iframeRef.current.contentWindow?.postMessage({ token }, "*");
+      }
+    };
+    const iframe = iframeRef.current;
+    if (iframe) {
+      iframe.addEventListener("load", handleIframeLoaded);
+      // Si ya está cargado (por hot reload), envía el token
+      if (iframe.contentWindow && iframe.contentDocument?.readyState === "complete") {
+        handleIframeLoaded();
+      }
+    }
+    return () => {
+      if (iframe) {
+        iframe.removeEventListener("load", handleIframeLoaded);
+      }
+    };
+  }, []);
 
   const handleBetSubmit = async (betData: BetData) => {
     try {
@@ -50,8 +77,12 @@ const Game = () => {
           <div className="grid grid-cols-12 gap-8">
             {/* Ventana de Juego Central */}
             <div className="col-span-12 xl:col-span-8">
-              <div className="rounded-3xl overflow-hidden border-4 border-indigo-500/20 shadow-2xl bg-black/40">
+              <div className="rounded-3xl overflow-hidden border-4 border-indigo-500/20 shadow-2xl bg-black/40 min-h-[600px] flex items-center justify-center">
+                {isLoading ? (
+                  <Skeleton variant="rectangular" className="w-full h-[600px]" animation="wave" />
+                ) : (
                 <iframe
+                  ref={iframeRef}
                   src="https://itch.io/embed-upload/13934810?color=2D1B69"
                   allowFullScreen
                   width="100%"
@@ -60,6 +91,7 @@ const Game = () => {
                   className="w-full aspect-[16/9] min-h-[600px]"
                   title="Play RacingFi"
                 ></iframe>
+                )}
               </div>
             </div>
 
@@ -67,24 +99,28 @@ const Game = () => {
             <div className="col-span-12 xl:col-span-4">
               <div className="sticky top-24 space-y-6">
                 {/* Panel de Apuestas */}
-                <div className="rounded-2xl bg-white/5 backdrop-blur-lg border border-fuchsia-500/20 shadow-xl p-6">
+                <div className="rounded-2xl bg-white/5 backdrop-blur-lg border border-fuchsia-500/20 shadow-xl p-6 min-h-[300px]">
                   <h2 className="text-2xl font-bold text-fuchsia-200 mb-6">Apuesta Rápida</h2>
+                  {isLoading ? (
+                    <CardSkeleton />
+                  ) : (
                   <BettingPanel
                     onBetSubmit={handleBetSubmit}
                     isLoading={isCreatingBet}
                     isBetting={isBetting}
                   />
+                  )}
                 </div>
 
                 {/* Leaderboard */}
-                <div className="rounded-2xl bg-white/5 backdrop-blur-lg border border-indigo-500/20 shadow-xl p-6">
+                <div className="rounded-2xl bg-white/5 backdrop-blur-lg border border-indigo-500/20 shadow-xl p-6 min-h-[300px]">
                   <h2 className="text-2xl font-bold text-indigo-200 mb-6 flex items-center gap-2">
                     <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" />
                     </svg>
                     Leaderboard
                   </h2>
-                  <Leaderboard />
+                  {isLoading ? <CardSkeleton /> : <Leaderboard />}
                 </div>
               </div>
             </div>
